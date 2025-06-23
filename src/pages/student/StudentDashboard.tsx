@@ -252,9 +252,7 @@ const StudentDashboard = () => {
                             <div className="space-y-6">
                               <div>
                                 <h4 className="font-semibold mb-2">Job Description</h4>
-                                <p className="text-gray-700">{selecte
-
-dJob.description}</p>
+                                <p className="text-gray-700">{selectedJob.description}</p>
                               </div>
 
                               <div className="grid grid-cols-2 gap-4">
