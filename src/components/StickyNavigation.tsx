@@ -67,7 +67,7 @@ const StickyNavigation = () => {
                 <a
                   key={item.id}
                   href={item.href}
-                  className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                  className={`text-base font-medium transition-all duration-300 hover:scale-105 ${
                     isScrolled
                       ? activeSection === item.id 
                         ? 'text-blue-600' 
@@ -83,7 +83,7 @@ const StickyNavigation = () => {
                 <Link
                   key={item.id}
                   to={item.href}
-                  className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                  className={`text-base font-medium transition-all duration-300 hover:scale-105 ${
                     isScrolled
                       ? 'text-gray-700 hover:text-blue-600'
                       : 'text-white/90 hover:text-white'
