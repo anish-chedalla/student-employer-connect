@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
@@ -29,7 +28,7 @@ import {
 const AdminDashboard = () => {
   const { profile, logout } = useAuth();
   const { jobs } = useJobs();
-  const [activeSection, setActiveSection] = useState('jobs');
+  const [activeSection, setActiveSection] = useState('overview');
 
   const pendingJobs = jobs.filter(job => job.status === 'pending');
   const approvedJobs = jobs.filter(job => job.status === 'approved');
