@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { GraduationCap, Search, MapPin, Clock, DollarSign, Building2, FileText, Send, LogOut, Calendar, Users } from 'lucide-react';
 
 const StudentDashboard = () => {
-  const { user, logout } = useAuth();
+  const { user, profile, logout } = useAuth();
   const { getApprovedJobs, applyToJob } = useJobs();
   const { toast } = useToast();
   
@@ -35,15 +35,7 @@ const StudentDashboard = () => {
     
     setIsApplying(true);
     
-    const success = await applyToJob({
-      jobId: selectedJob.id,
-      studentId: user.id,
-      studentName: user.name,
-      studentEmail: user.email,
-      message: applicationMessage,
-      // TODO: Add resume upload functionality
-      resumeUrl: undefined
-    });
+    const success = await applyToJob(selectedJob.id, applicationMessage);
     
     if (success) {
       toast({
@@ -81,7 +73,7 @@ const StudentDashboard = () => {
               <GraduationCap className="h-8 w-8 text-blue-600" />
               <div>
                 <h1 className="text-xl font-bold text-gray-900">Student Dashboard</h1>
-                <p className="text-sm text-gray-600">Welcome back, {user?.name}</p>
+                <p className="text-sm text-gray-600">Welcome back, {profile?.full_name}</p>
               </div>
             </div>
             <Button 
@@ -195,7 +187,7 @@ const StudentDashboard = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                       <div className="flex items-center text-gray-600">
                         <DollarSign className="h-4 w-4 mr-2" />
-                        <span>{job.pay}</span>
+                        <span>{job.salary}</span>
                       </div>
                       <div className="flex items-center text-gray-600">
                         <MapPin className="h-4 w-4 mr-2" />
@@ -207,28 +199,10 @@ const StudentDashboard = () => {
                       </div>
                     </div>
 
-                    {job.requirements.length > 0 && (
-                      <div className="mb-4">
-                        <h4 className="font-medium text-gray-900 mb-2">Requirements:</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {job.requirements.slice(0, 3).map((req, index) => (
-                            <Badge key={index} variant="secondary">
-                              {req}
-                            </Badge>
-                          ))}
-                          {job.requirements.length > 3 && (
-                            <Badge variant="secondary">
-                              +{job.requirements.length - 3} more
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
                     <div className="flex justify-between items-center">
                       <div className="text-sm text-gray-600">
                         <Clock className="h-4 w-4 inline mr-1" />
-                        Posted {formatDate(job.createdAt)}
+                        Posted {formatDate(job.created_at)}
                       </div>
                       
                       <Dialog>
@@ -258,47 +232,17 @@ const StudentDashboard = () => {
                               <div className="grid grid-cols-2 gap-4">
                                 <div>
                                   <h4 className="font-semibold mb-2">Compensation</h4>
-                                  <p className="text-gray-700">{selectedJob.pay}</p>
+                                  <p className="text-gray-700">{selectedJob.salary}</p>
                                 </div>
                                 <div>
-                                  <h4 className="font-semibold mb-2">Application Deadline</h4>
-                                  <p className="text-gray-700">{formatDate(selectedJob.deadline)}</p>
+                                  <h4 className="font-semibold mb-2">Job Type</h4>
+                                  <p className="text-gray-700 capitalize">{selectedJob.type}</p>
                                 </div>
                               </div>
 
-                              {selectedJob.requirements.length > 0 && (
-                                <div>
-                                  <h4 className="font-semibold mb-2">Requirements</h4>
-                                  <ul className="list-disc list-inside space-y-1 text-gray-700">
-                                    {selectedJob.requirements.map((req: string, index: number) => (
-                                      <li key={index}>{req}</li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              )}
-
-                              {selectedJob.benefits.length > 0 && (
-                                <div>
-                                  <h4 className="font-semibold mb-2">Benefits</h4>
-                                  <ul className="list-disc list-inside space-y-1 text-gray-700">
-                                    {selectedJob.benefits.map((benefit: string, index: number) => (
-                                      <li key={index}>{benefit}</li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              )}
-
                               <div>
-                                <h4 className="font-semibold mb-2">Contact Information</h4>
-                                <p className="text-gray-700">
-                                  Email: {selectedJob.contactEmail}
-                                  {selectedJob.contactPhone && (
-                                    <>
-                                      <br />
-                                      Phone: {selectedJob.contactPhone}
-                                    </>
-                                  )}
-                                </p>
+                                <h4 className="font-semibold mb-2">Application Deadline</h4>
+                                <p className="text-gray-700">{formatDate(selectedJob.deadline)}</p>
                               </div>
 
                               <div className="border-t pt-6">

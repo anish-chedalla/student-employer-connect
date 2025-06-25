@@ -70,7 +70,14 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         return;
       }
 
-      setJobs(data || []);
+      // Type cast the data to ensure proper types
+      const typedJobs = (data || []).map(job => ({
+        ...job,
+        type: job.type as 'full-time' | 'part-time' | 'internship' | 'contract',
+        status: job.status as 'pending' | 'approved' | 'rejected'
+      }));
+
+      setJobs(typedJobs);
     } catch (error) {
       console.error('Error refreshing jobs:', error);
     } finally {
@@ -92,7 +99,13 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         return;
       }
 
-      setApplications(data || []);
+      // Type cast the data to ensure proper types
+      const typedApplications = (data || []).map(app => ({
+        ...app,
+        status: app.status as 'pending' | 'reviewed' | 'accepted' | 'rejected'
+      }));
+
+      setApplications(typedApplications);
     } catch (error) {
       console.error('Error refreshing applications:', error);
     }

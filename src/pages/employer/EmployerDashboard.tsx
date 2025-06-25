@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Building2, Plus, Clock, CheckCircle, XCircle, LogOut, Calendar, Users, Eye } from 'lucide-react';
 
 const EmployerDashboard = () => {
-  const { user, logout } = useAuth();
+  const { user, profile, logout } = useAuth();
   const { getJobsByEmployer, submitJob } = useJobs();
   const { toast } = useToast();
   
@@ -25,13 +25,10 @@ const EmployerDashboard = () => {
     title: '',
     description: '',
     company: '',
-    pay: '',
+    salary: '',
+    type: 'full-time' as 'full-time' | 'part-time' | 'internship' | 'contract',
     deadline: '',
-    contactEmail: '',
-    contactPhone: '',
-    location: '',
-    requirements: '',
-    benefits: ''
+    location: ''
   });
 
   const employerJobs = getJobsByEmployer(user?.id || '');
@@ -40,7 +37,7 @@ const EmployerDashboard = () => {
     if (!user) return;
     
     // Basic validation
-    if (!newJob.title || !newJob.description || !newJob.company || !newJob.pay || !newJob.deadline || !newJob.contactEmail) {
+    if (!newJob.title || !newJob.description || !newJob.company || !newJob.salary || !newJob.deadline) {
       toast({
         title: "Validation Error",
         description: "Please fill in all required fields.",
@@ -51,14 +48,7 @@ const EmployerDashboard = () => {
 
     setIsSubmitting(true);
     
-    const jobData = {
-      ...newJob,
-      employerId: user.id,
-      requirements: newJob.requirements.split('\n').filter(req => req.trim()),
-      benefits: newJob.benefits.split('\n').filter(benefit => benefit.trim())
-    };
-    
-    const success = await submitJob(jobData);
+    const success = await submitJob(newJob);
     
     if (success) {
       toast({
@@ -69,13 +59,10 @@ const EmployerDashboard = () => {
         title: '',
         description: '',
         company: '',
-        pay: '',
+        salary: '',
+        type: 'full-time',
         deadline: '',
-        contactEmail: '',
-        contactPhone: '',
-        location: '',
-        requirements: '',
-        benefits: ''
+        location: ''
       });
       setShowNewJobDialog(false);
     } else {
@@ -132,7 +119,7 @@ const EmployerDashboard = () => {
               <Building2 className="h-8 w-8 text-green-600" />
               <div>
                 <h1 className="text-xl font-bold text-gray-900">Employer Dashboard</h1>
-                <p className="text-sm text-gray-600">Welcome back, {user?.name}</p>
+                <p className="text-sm text-gray-600">Welcome back, {profile?.full_name}</p>
               </div>
             </div>
             <Button 
@@ -191,9 +178,7 @@ const EmployerDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Applications</p>
-                  <p className="text-2xl font-bold text-purple-600">
-                    {employerJobs.reduce((total, job) => total + job.applications.length, 0)}
-                  </p>
+                  <p className="text-2xl font-bold text-purple-600">0</p>
                 </div>
                 <Users className="h-8 w-8 text-purple-600" />
               </div>
@@ -255,11 +240,11 @@ const EmployerDashboard = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="pay">Compensation *</Label>
+                    <Label htmlFor="salary">Compensation *</Label>
                     <Input
-                      id="pay"
-                      value={newJob.pay}
-                      onChange={(e) => setNewJob({...newJob, pay: e.target.value})}
+                      id="salary"
+                      value={newJob.salary}
+                      onChange={(e) => setNewJob({...newJob, salary: e.target.value})}
                       placeholder="e.g., $15-20/hour, $500/week"
                     />
                   </div>
@@ -276,56 +261,28 @@ const EmployerDashboard = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="contactEmail">Contact Email *</Label>
-                    <Input
-                      id="contactEmail"
-                      type="email"
-                      value={newJob.contactEmail}
-                      onChange={(e) => setNewJob({...newJob, contactEmail: e.target.value})}
-                      placeholder="hr@company.com"
-                    />
+                    <Label htmlFor="type">Job Type *</Label>
+                    <select
+                      id="type"
+                      value={newJob.type}
+                      onChange={(e) => setNewJob({...newJob, type: e.target.value as 'full-time' | 'part-time' | 'internship' | 'contract'})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="full-time">Full-time</option>
+                      <option value="part-time">Part-time</option>
+                      <option value="internship">Internship</option>
+                      <option value="contract">Contract</option>
+                    </select>
                   </div>
                   <div>
-                    <Label htmlFor="contactPhone">Contact Phone</Label>
+                    <Label htmlFor="deadline">Application Deadline *</Label>
                     <Input
-                      id="contactPhone"
-                      value={newJob.contactPhone}
-                      onChange={(e) => setNewJob({...newJob, contactPhone: e.target.value})}
-                      placeholder="(555) 123-4567"
+                      id="deadline"
+                      type="date"
+                      value={newJob.deadline}
+                      onChange={(e) => setNewJob({...newJob, deadline: e.target.value})}
                     />
                   </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="deadline">Application Deadline *</Label>
-                  <Input
-                    id="deadline"
-                    type="date"
-                    value={newJob.deadline}
-                    onChange={(e) => setNewJob({...newJob, deadline: e.target.value})}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="requirements">Requirements (one per line)</Label>
-                  <Textarea
-                    id="requirements"
-                    value={newJob.requirements}
-                    onChange={(e) => setNewJob({...newJob, requirements: e.target.value})}
-                    placeholder="Currently enrolled in college&#10;Strong communication skills&#10;Previous experience preferred"
-                    rows={3}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="benefits">Benefits (one per line)</Label>
-                  <Textarea
-                    id="benefits"
-                    value={newJob.benefits}
-                    onChange={(e) => setNewJob({...newJob, benefits: e.target.value})}
-                    placeholder="Flexible schedule&#10;Professional development&#10;Team events"
-                    rows={3}
-                  />
                 </div>
 
                 <Button 
@@ -374,53 +331,27 @@ const EmployerDashboard = () => {
                         {getStatusIcon(job.status)}
                         <span className="capitalize">{job.status}</span>
                       </Badge>
-                      {job.applications.length > 0 && (
-                        <Badge variant="outline" className="flex items-center space-x-1">
-                          <Users className="h-3 w-3" />
-                          <span>{job.applications.length} Applications</span>
-                        </Badge>
-                      )}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 text-sm text-gray-600">
                     <div>
-                      <span className="font-medium">Pay:</span> {job.pay}
+                      <span className="font-medium">Salary:</span> {job.salary}
                     </div>
                     <div>
                       <span className="font-medium">Location:</span> {job.location}
                     </div>
                     <div>
-                      <span className="font-medium">Deadline:</span> {formatDate(job.deadline)}
+                      <span className="font-medium">Type:</span> {job.type}
                     </div>
                     <div>
-                      <span className="font-medium">Posted:</span> {formatDate(job.createdAt)}
+                      <span className="font-medium">Deadline:</span> {formatDate(job.deadline)}
                     </div>
                   </div>
 
-                  {job.status === 'approved' && job.applications.length > 0 && (
-                    <div className="mt-4 p-4 bg-green-50 rounded-lg">
-                      <h4 className="font-medium text-green-900 mb-2">Recent Applications</h4>
-                      <div className="space-y-2">
-                        {job.applications.slice(0, 3).map((app) => (
-                          <div key={app.id} className="flex items-center justify-between text-sm">
-                            <div>
-                              <span className="font-medium">{app.studentName}</span>
-                              <span className="text-gray-600 ml-2">({app.studentEmail})</span>
-                            </div>
-                            <span className="text-gray-500">
-                              {formatDate(app.appliedAt)}
-                            </span>
-                          </div>
-                        ))}
-                        {job.applications.length > 3 && (
-                          <p className="text-sm text-green-700">
-                            +{job.applications.length - 3} more applications
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                  <div className="text-sm text-gray-500">
+                    <span className="font-medium">Posted:</span> {formatDate(job.created_at)}
+                  </div>
 
                   {job.status === 'rejected' && (
                     <div className="mt-4 p-4 bg-red-50 rounded-lg">

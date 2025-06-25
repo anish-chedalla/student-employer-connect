@@ -45,7 +45,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             .eq('id', session.user.id)
             .single();
           
-          setProfile(profileData);
+          if (profileData) {
+            // Type cast the profile data to ensure proper types
+            const typedProfile: UserProfile = {
+              ...profileData,
+              role: profileData.role as 'student' | 'employer' | 'admin'
+            };
+            setProfile(typedProfile);
+          }
         } else {
           setProfile(null);
         }
@@ -67,7 +74,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           .eq('id', session.user.id)
           .single()
           .then(({ data: profileData }) => {
-            setProfile(profileData);
+            if (profileData) {
+              // Type cast the profile data to ensure proper types
+              const typedProfile: UserProfile = {
+                ...profileData,
+                role: profileData.role as 'student' | 'employer' | 'admin'
+              };
+              setProfile(typedProfile);
+            }
             setIsLoading(false);
           });
       } else {
