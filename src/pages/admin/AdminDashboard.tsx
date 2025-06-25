@@ -1,242 +1,239 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
-  Users, 
-  Briefcase, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  Eye,
-  LogOut,
+  SidebarProvider,
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarInset,
+  SidebarTrigger
+} from "@/components/ui/sidebar";
+import JobManagement from './components/JobManagement';
+import EmployerVerification from './components/EmployerVerification';
+import { 
+  Briefcase,
+  Users,
+  Shield,
   BarChart3
 } from 'lucide-react';
 
 const AdminDashboard = () => {
   const { profile, logout } = useAuth();
-  const { jobs, updateJobStatus } = useJobs();
-  const [selectedJob, setSelectedJob] = useState(null);
+  const { jobs } = useJobs();
+  const [activeSection, setActiveSection] = useState('jobs');
 
   const pendingJobs = jobs.filter(job => job.status === 'pending');
   const approvedJobs = jobs.filter(job => job.status === 'approved');
   const rejectedJobs = jobs.filter(job => job.status === 'rejected');
 
-  const handleApprove = (jobId: string) => {
-    updateJobStatus(jobId, 'approved');
-  };
+  const menuItems = [
+    {
+      id: 'overview',
+      title: 'Overview',
+      icon: BarChart3,
+    },
+    {
+      id: 'jobs',
+      title: 'Job Management',
+      icon: Briefcase,
+    },
+    {
+      id: 'employers',
+      title: 'Employer Verification',
+      icon: Users,
+    },
+  ];
 
-  const handleReject = (jobId: string) => {
-    updateJobStatus(jobId, 'rejected');
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
-
-  const JobCard = ({ job, showActions = true }: { job: any, showActions?: boolean }) => (
-    <Card className="mb-4">
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-lg">{job.title}</CardTitle>
-            <CardDescription>{job.company}</CardDescription>
-          </div>
-          <Badge 
-            variant={
-              job.status === 'approved' ? 'default' : 
-              job.status === 'pending' ? 'secondary' : 
-              'destructive'
-            }
-          >
-            {job.status}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          <p className="text-sm text-gray-600">{job.description}</p>
-          <div className="flex flex-wrap gap-2 text-sm">
-            <span className="bg-blue-100 px-2 py-1 rounded">💰 {job.salary}</span>
-            <span className="bg-green-100 px-2 py-1 rounded">📍 {job.location}</span>
-            <span className="bg-purple-100 px-2 py-1 rounded">⏰ {job.type}</span>
-          </div>
-          <p className="text-xs text-gray-500">
-            Deadline: {formatDate(job.deadline)} | Posted: {formatDate(job.created_at)}
-          </p>
-          
-          {showActions && job.status === 'pending' && (
-            <div className="flex gap-2 mt-4">
-              <Button 
-                size="sm" 
-                onClick={() => handleApprove(job.id)}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                <CheckCircle className="h-4 w-4 mr-1" />
-                Approve
-              </Button>
-              <Button 
-                size="sm" 
-                variant="destructive"
-                onClick={() => handleReject(job.id)}
-              >
-                <XCircle className="h-4 w-4 mr-1" />
-                Reject
-              </Button>
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'overview':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight">Dashboard Overview</h2>
+              <p className="text-muted-foreground">
+                Welcome back, {profile?.full_name}. Here's what's happening today.
+              </p>
             </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
+            
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Jobs</CardTitle>
+                  <Briefcase className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{jobs.length}</div>
+                  <p className="text-xs text-muted-foreground">
+                    All job postings
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
+                  <Shield className="h-4 w-4 text-amber-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-amber-600">{pendingJobs.length}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Awaiting approval
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Approved</CardTitle>
+                  <Shield className="h-4 w-4 text-green-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-green-600">{approvedJobs.length}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Live on platform
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Rejected</CardTitle>
+                  <Shield className="h-4 w-4 text-red-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-red-600">{rejectedJobs.length}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Not approved
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+              <Card className="col-span-4">
+                <CardHeader>
+                  <CardTitle>Recent Activity</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {pendingJobs.slice(0, 5).map(job => (
+                      <div key={job.id} className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium leading-none">{job.title}</p>
+                          <p className="text-sm text-muted-foreground">{job.company}</p>
+                        </div>
+                        <Badge variant="secondary">Pending</Badge>
+                      </div>
+                    ))}
+                    {pendingJobs.length === 0 && (
+                      <p className="text-sm text-muted-foreground text-center py-4">
+                        No pending jobs to review
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="col-span-3">
+                <CardHeader>
+                  <CardTitle>Quick Actions</CardTitle>
+                  <CardDescription>
+                    Common administrative tasks
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => setActiveSection('jobs')}
+                  >
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    Review Jobs
+                  </Button>
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => setActiveSection('employers')}
+                  >
+                    <Users className="mr-2 h-4 w-4" />
+                    Verify Employers
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        );
+      case 'jobs':
+        return <JobManagement />;
+      case 'employers':
+        return <EmployerVerification />;
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-gray-600">Welcome back, {profile?.full_name}</p>
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <Sidebar>
+          <SidebarHeader className="border-b p-4">
+            <div className="flex items-center space-x-2">
+              <Shield className="h-6 w-6 text-primary" />
+              <div>
+                <h2 className="font-semibold">Admin Panel</h2>
+                <p className="text-xs text-muted-foreground">JobHub Management</p>
+              </div>
             </div>
-            <Button 
-              variant="outline" 
-              onClick={logout}
-              className="flex items-center space-x-2"
-            >
-              <LogOut className="h-4 w-4" />
-              <span>Logout</span>
-            </Button>
-          </div>
-        </div>
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarMenu>
+              {menuItems.map((item) => (
+                <SidebarMenuItem key={item.id}>
+                  <SidebarMenuButton
+                    onClick={() => setActiveSection(item.id)}
+                    isActive={activeSection === item.id}
+                    className="w-full"
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarContent>
+        </Sidebar>
+
+        <SidebarInset className="flex-1">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+            <SidebarTrigger className="-ml-1" />
+            <div className="flex flex-1 items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <h1 className="font-semibold">
+                  {menuItems.find(item => item.id === activeSection)?.title || 'Dashboard'}
+                </h1>
+              </div>
+              <Button variant="outline" onClick={logout}>
+                Logout
+              </Button>
+            </div>
+          </header>
+
+          <main className="flex-1 space-y-4 p-4 pt-6">
+            {renderContent()}
+          </main>
+        </SidebarInset>
       </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Analytics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Jobs</CardTitle>
-              <Briefcase className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{jobs.length}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
-              <Clock className="h-4 w-4 text-yellow-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">{pendingJobs.length}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Approved</CardTitle>
-              <CheckCircle className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{approvedJobs.length}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Rejected</CardTitle>
-              <XCircle className="h-4 w-4 text-red-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">{rejectedJobs.length}</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Job Management Tabs */}
-        <Tabs defaultValue="pending" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="pending" className="flex items-center space-x-2">
-              <Clock className="h-4 w-4" />
-              <span>Pending ({pendingJobs.length})</span>
-            </TabsTrigger>
-            <TabsTrigger value="approved" className="flex items-center space-x-2">
-              <CheckCircle className="h-4 w-4" />
-              <span>Approved ({approvedJobs.length})</span>
-            </TabsTrigger>
-            <TabsTrigger value="rejected" className="flex items-center space-x-2">
-              <XCircle className="h-4 w-4" />
-              <span>Rejected ({rejectedJobs.length})</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="pending" className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Jobs Pending Review</h3>
-              {pendingJobs.length === 0 ? (
-                <Alert>
-                  <AlertDescription>
-                    No jobs pending review at this time.
-                  </AlertDescription>
-                </Alert>
-              ) : (
-                <div className="space-y-4">
-                  {pendingJobs.map(job => (
-                    <JobCard key={job.id} job={job} />
-                  ))}
-                </div>
-              )}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="approved" className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Approved Jobs</h3>
-              {approvedJobs.length === 0 ? (
-                <Alert>
-                  <AlertDescription>
-                    No approved jobs yet.
-                  </AlertDescription>
-                </Alert>
-              ) : (
-                <div className="space-y-4">
-                  {approvedJobs.map(job => (
-                    <JobCard key={job.id} job={job} showActions={false} />
-                  ))}
-                </div>
-              )}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="rejected" className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Rejected Jobs</h3>
-              {rejectedJobs.length === 0 ? (
-                <Alert>
-                  <AlertDescription>
-                    No rejected jobs.
-                  </AlertDescription>
-                </Alert>
-              ) : (
-                <div className="space-y-4">
-                  {rejectedJobs.map(job => (
-                    <JobCard key={job.id} job={job} showActions={false} />
-                  ))}
-                </div>
-              )}
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
+    </SidebarProvider>
   );
 };
 

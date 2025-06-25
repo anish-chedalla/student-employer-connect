@@ -32,7 +32,7 @@ interface JobContextType {
   jobs: JobPosting[];
   applications: JobApplication[];
   submitJob: (job: Omit<JobPosting, 'id' | 'status' | 'employer_id' | 'created_at' | 'updated_at'>) => Promise<boolean>;
-  updateJobStatus: (jobId: string, status: 'approved' | 'rejected') => Promise<boolean>;
+  updateJobStatus: (jobId: string, status: 'approved' | 'rejected' | 'pending') => Promise<boolean>;
   applyToJob: (jobId: string, coverLetter: string) => Promise<boolean>;
   getJobsByEmployer: (employerId: string) => JobPosting[];
   getApprovedJobs: () => JobPosting[];
@@ -144,7 +144,7 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
-  const updateJobStatus = async (jobId: string, status: 'approved' | 'rejected'): Promise<boolean> => {
+  const updateJobStatus = async (jobId: string, status: 'approved' | 'rejected' | 'pending'): Promise<boolean> => {
     try {
       const { error } = await supabase
         .from('jobs')

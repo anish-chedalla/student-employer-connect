@@ -100,6 +100,8 @@ export type Database = {
           id: string
           role: string
           updated_at: string
+          verification_requested_at: string | null
+          verified: boolean | null
         }
         Insert: {
           created_at?: string
@@ -108,6 +110,8 @@ export type Database = {
           id: string
           role: string
           updated_at?: string
+          verification_requested_at?: string | null
+          verified?: boolean | null
         }
         Update: {
           created_at?: string
@@ -116,6 +120,8 @@ export type Database = {
           id?: string
           role?: string
           updated_at?: string
+          verification_requested_at?: string | null
+          verified?: boolean | null
         }
         Relationships: []
       }
