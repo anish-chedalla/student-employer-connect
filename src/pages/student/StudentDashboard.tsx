@@ -381,40 +381,34 @@ const StudentDashboard = () => {
           </header>
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {/* Stats Cards - Updated to match search box spacing */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {/* Stats Cards */}
+            <div className="space-y-6 mb-8">
               <Card>
                 <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Available Jobs</p>
-                      <p className="text-2xl font-bold text-gray-900">{approvedJobs.length}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Available Jobs</p>
+                        <p className="text-2xl font-bold text-gray-900">{approvedJobs.length}</p>
+                      </div>
+                      <Building2 className="h-8 w-8 text-blue-600" />
                     </div>
-                    <Building2 className="h-8 w-8 text-blue-600" />
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Applications Sent</p>
-                      <p className="text-2xl font-bold text-gray-900">{studentApplications.length}</p>
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Applications Sent</p>
+                        <p className="text-2xl font-bold text-gray-900">{studentApplications.length}</p>
+                      </div>
+                      <Send className="h-8 w-8 text-green-600" />
                     </div>
-                    <Send className="h-8 w-8 text-green-600" />
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Acceptances</p>
-                      <p className="text-2xl font-bold text-gray-900">{acceptedApplications.length}</p>
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Acceptances</p>
+                        <p className="text-2xl font-bold text-gray-900">{acceptedApplications.length}</p>
+                      </div>
+                      <Users className="h-8 w-8 text-purple-600" />
                     </div>
-                    <Users className="h-8 w-8 text-purple-600" />
                   </div>
                 </CardContent>
               </Card>
