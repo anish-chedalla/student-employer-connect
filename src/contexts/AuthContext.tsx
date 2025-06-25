@@ -30,88 +30,115 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Security definer function to fetch user profile (prevents deadlock)
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data: profileData, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        console.error('Profile fetch error:', error);
+        return null;
+      }
+
+      if (profileData) {
+        const typedProfile: UserProfile = {
+          ...profileData,
+          role: profileData.role as 'student' | 'employer' | 'admin'
+        };
+        return typedProfile;
+      }
+    } catch (error) {
+      console.error('Profile fetch exception:', error);
+    }
+    return null;
+  };
+
   useEffect(() => {
-    // Set up auth state listener
+    // Clear any potentially corrupted state
+    setIsLoading(true);
+    
+    // Set up auth state listener - ONLY synchronous operations
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
+        
+        // Only synchronous state updates here
         setSession(session);
         setUser(session?.user ?? null);
         
+        // Defer profile fetching to prevent deadlock
         if (session?.user) {
-          // Fetch user profile
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-          
-          if (profileData) {
-            // Type cast the profile data to ensure proper types
-            const typedProfile: UserProfile = {
-              ...profileData,
-              role: profileData.role as 'student' | 'employer' | 'admin'
-            };
-            setProfile(typedProfile);
-          }
+          setTimeout(() => {
+            fetchUserProfile(session.user.id).then(profileData => {
+              setProfile(profileData);
+              setIsLoading(false);
+            });
+          }, 0);
         } else {
           setProfile(null);
+          setIsLoading(false);
         }
-        
-        setIsLoading(false);
       }
     );
 
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        // Fetch user profile
-        supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data: profileData }) => {
-            if (profileData) {
-              // Type cast the profile data to ensure proper types
-              const typedProfile: UserProfile = {
-                ...profileData,
-                role: profileData.role as 'student' | 'employer' | 'admin'
-              };
-              setProfile(typedProfile);
-            }
-            setIsLoading(false);
-          });
-      } else {
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Session error:', error);
+          setIsLoading(false);
+          return;
+        }
+
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          const profileData = await fetchUserProfile(session.user.id);
+          setProfile(profileData);
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+      } finally {
         setIsLoading(false);
       }
-    });
+    };
+
+    initializeAuth();
 
     return () => subscription.unsubscribe();
   }, []);
 
   const login = async (email: string, password: string) => {
     try {
+      setIsLoading(true);
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
+        setIsLoading(false);
         return { error: error.message };
       }
 
+      // Don't set loading to false here - let the auth state change handle it
       return {};
     } catch (error) {
+      setIsLoading(false);
       return { error: 'An unexpected error occurred' };
     }
   };
 
   const signUp = async (email: string, password: string, fullName: string, role: 'student' | 'employer' | 'admin') => {
     try {
+      setIsLoading(true);
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -125,11 +152,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
 
       if (error) {
+        setIsLoading(false);
         return { error: error.message };
       }
 
+      setIsLoading(false);
       return {};
     } catch (error) {
+      setIsLoading(false);
       return { error: 'An unexpected error occurred' };
     }
   };
@@ -137,6 +167,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = async () => {
     try {
       console.log('Logging out user...');
+      setIsLoading(true);
+      
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Logout error:', error);
@@ -147,6 +179,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(null);
       setProfile(null);
       setSession(null);
+      setIsLoading(false);
       
       // Redirect to home page
       window.location.href = '/';
@@ -154,6 +187,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.log('Logout successful');
     } catch (error) {
       console.error('Failed to logout:', error);
+      setIsLoading(false);
     }
   };
 
