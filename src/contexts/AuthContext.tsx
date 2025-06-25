@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -57,6 +56,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return null;
   };
 
+  // Function to handle redirects based on user role
+  const handleRoleBasedRedirect = (userProfile: UserProfile) => {
+    switch (userProfile.role) {
+      case 'admin':
+        window.location.href = '/admin/dashboard';
+        break;
+      case 'employer':
+        window.location.href = '/employer/dashboard';
+        break;
+      case 'student':
+        window.location.href = '/student/dashboard';
+        break;
+      default:
+        window.location.href = '/';
+    }
+  };
+
   useEffect(() => {
     // Clear any potentially corrupted state
     setIsLoading(true);
@@ -76,6 +92,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             fetchUserProfile(session.user.id).then(profileData => {
               setProfile(profileData);
               setIsLoading(false);
+              
+              // Handle redirect after successful profile fetch
+              if (event === 'SIGNED_IN' && profileData) {
+                setTimeout(() => {
+                  handleRoleBasedRedirect(profileData);
+                }, 100);
+              }
             });
           }, 0);
         } else {
