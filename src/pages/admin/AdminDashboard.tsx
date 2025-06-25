@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 const AdminDashboard = () => {
-  const { user, logout } = useAuth();
+  const { profile, logout } = useAuth();
   const { jobs, updateJobStatus } = useJobs();
   const [selectedJob, setSelectedJob] = useState(null);
 
@@ -67,7 +67,7 @@ const AdminDashboard = () => {
             <span className="bg-purple-100 px-2 py-1 rounded">⏰ {job.type}</span>
           </div>
           <p className="text-xs text-gray-500">
-            Deadline: {formatDate(job.deadline)} | Posted: {formatDate(job.postedDate)}
+            Deadline: {formatDate(job.deadline)} | Posted: {formatDate(job.created_at)}
           </p>
           
           {showActions && job.status === 'pending' && (
@@ -88,14 +88,6 @@ const AdminDashboard = () => {
                 <XCircle className="h-4 w-4 mr-1" />
                 Reject
               </Button>
-              <Button 
-                size="sm" 
-                variant="outline"
-                onClick={() => setSelectedJob(job)}
-              >
-                <Eye className="h-4 w-4 mr-1" />
-                View Details
-              </Button>
             </div>
           )}
         </div>
@@ -111,7 +103,7 @@ const AdminDashboard = () => {
           <div className="flex justify-between items-center py-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-gray-600">Welcome back, {user?.name}</p>
+              <p className="text-gray-600">Welcome back, {profile?.full_name}</p>
             </div>
             <Button 
               variant="outline" 

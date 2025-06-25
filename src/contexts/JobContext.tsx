@@ -1,118 +1,129 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from './AuthContext';
 
 export interface JobPosting {
   id: string;
   title: string;
-  description: string;
   company: string;
-  pay: string;
-  deadline: string;
-  contactEmail: string;
-  contactPhone?: string;
+  description: string;
   location: string;
-  requirements: string[];
-  benefits: string[];
-  employerId: string;
+  salary: string;
+  type: 'full-time' | 'part-time' | 'internship' | 'contract';
+  deadline: string;
   status: 'pending' | 'approved' | 'rejected';
-  createdAt: string;
-  applications: JobApplication[];
+  employer_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface JobApplication {
   id: string;
-  jobId: string;
-  studentId: string;
-  studentName: string;
-  studentEmail: string;
-  message: string;
-  resumeUrl?: string;
-  appliedAt: string;
+  job_id: string;
+  student_id: string;
+  status: 'pending' | 'reviewed' | 'accepted' | 'rejected';
+  cover_letter?: string;
+  resume_url?: string;
+  applied_at: string;
 }
 
 interface JobContextType {
   jobs: JobPosting[];
   applications: JobApplication[];
-  submitJob: (job: Omit<JobPosting, 'id' | 'status' | 'createdAt' | 'applications'>) => Promise<boolean>;
+  submitJob: (job: Omit<JobPosting, 'id' | 'status' | 'employer_id' | 'created_at' | 'updated_at'>) => Promise<boolean>;
   updateJobStatus: (jobId: string, status: 'approved' | 'rejected') => Promise<boolean>;
-  applyToJob: (application: Omit<JobApplication, 'id' | 'appliedAt'>) => Promise<boolean>;
+  applyToJob: (jobId: string, coverLetter: string) => Promise<boolean>;
   getJobsByEmployer: (employerId: string) => JobPosting[];
   getApprovedJobs: () => JobPosting[];
-  deleteJob: (jobId: string) => Promise<boolean>;
-  getAnalytics: () => { total: number; approved: number; pending: number; rejected: number };
+  refreshJobs: () => Promise<void>;
+  isLoading: boolean;
 }
 
 const JobContext = createContext<JobContextType | undefined>(undefined);
 
-// Mock job data - TODO: Replace with real backend
-const mockJobs: JobPosting[] = [
-  {
-    id: '1',
-    title: 'Software Engineering Intern',
-    description: 'Join our development team as a software engineering intern. Work on real projects and gain valuable experience in web development, mobile apps, and cloud technologies.',
-    company: 'TechCorp Solutions',
-    pay: '$18-22/hour',
-    deadline: '2024-08-15',
-    contactEmail: 'hr@techcorp.com',
-    contactPhone: '(555) 123-4567',
-    location: 'Remote/Hybrid',
-    requirements: ['Currently enrolled in CS/IT program', 'Basic knowledge of JavaScript/Python', 'Strong problem-solving skills'],
-    benefits: ['Flexible hours', 'Mentorship program', 'Tech stipend'],
-    employerId: '3',
-    status: 'approved',
-    createdAt: '2024-06-01',
-    applications: []
-  },
-  {
-    id: '2',
-    title: 'Marketing Assistant',
-    description: 'Support our marketing team with social media management, content creation, and campaign analysis. Perfect for students interested in digital marketing.',
-    company: 'Creative Marketing Agency',
-    pay: '$15-18/hour',
-    deadline: '2024-07-30',
-    contactEmail: 'jobs@creativeagency.com',
-    location: 'Downtown Office',
-    requirements: ['Strong communication skills', 'Social media savvy', 'Creative mindset'],
-    benefits: ['Creative environment', 'Portfolio building', 'Team events'],
-    employerId: '3',
-    status: 'approved',
-    createdAt: '2024-06-05',
-    applications: []
-  },
-  {
-    id: '3',
-    title: 'Data Entry Clerk',
-    description: 'Part-time position for detail-oriented student to help with data entry and administrative tasks.',
-    company: 'Local Business Solutions',
-    pay: '$14/hour',
-    deadline: '2024-08-01',
-    contactEmail: 'admin@localbiz.com',
-    location: 'On-site',
-    requirements: ['Attention to detail', 'Basic computer skills', 'Reliable schedule'],
-    benefits: ['Flexible scheduling', 'Experience certificate'],
-    employerId: '3',
-    status: 'pending',
-    createdAt: '2024-06-10',
-    applications: []
-  }
-];
-
-export const JobProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [jobs, setJobs] = useState<JobPosting[]>(mockJobs);
+export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { user, profile } = useAuth();
+  const [jobs, setJobs] = useState<JobPosting[]>([]);
   const [applications, setApplications] = useState<JobApplication[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const submitJob = async (jobData: Omit<JobPosting, 'id' | 'status' | 'createdAt' | 'applications'>): Promise<boolean> => {
-    // TODO: Replace with real API call
+  const refreshJobs = async () => {
     try {
-      const newJob: JobPosting = {
-        ...jobData,
-        id: Date.now().toString(),
-        status: 'pending',
-        createdAt: new Date().toISOString(),
-        applications: []
-      };
+      let query = supabase.from('jobs').select('*');
       
-      setJobs(prevJobs => [...prevJobs, newJob]);
+      // Filter based on user role
+      if (profile?.role === 'admin') {
+        // Admins can see all jobs
+      } else if (profile?.role === 'employer') {
+        // Employers can see their own jobs and approved jobs
+        query = query.or(`employer_id.eq.${user?.id},status.eq.approved`);
+      } else {
+        // Students can only see approved jobs
+        query = query.eq('status', 'approved');
+      }
+
+      const { data, error } = await query;
+      
+      if (error) {
+        console.error('Error fetching jobs:', error);
+        return;
+      }
+
+      setJobs(data || []);
+    } catch (error) {
+      console.error('Error refreshing jobs:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const refreshApplications = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('applications')
+        .select('*')
+        .eq('student_id', user.id);
+
+      if (error) {
+        console.error('Error fetching applications:', error);
+        return;
+      }
+
+      setApplications(data || []);
+    } catch (error) {
+      console.error('Error refreshing applications:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (profile) {
+      refreshJobs();
+      if (profile.role === 'student') {
+        refreshApplications();
+      }
+    }
+  }, [profile, user]);
+
+  const submitJob = async (jobData: Omit<JobPosting, 'id' | 'status' | 'employer_id' | 'created_at' | 'updated_at'>): Promise<boolean> => {
+    if (!user) return false;
+
+    try {
+      const { error } = await supabase.from('jobs').insert([
+        {
+          ...jobData,
+          employer_id: user.id,
+        },
+      ]);
+
+      if (error) {
+        console.error('Error submitting job:', error);
+        return false;
+      }
+
+      await refreshJobs();
       return true;
     } catch (error) {
       console.error('Error submitting job:', error);
@@ -121,13 +132,18 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const updateJobStatus = async (jobId: string, status: 'approved' | 'rejected'): Promise<boolean> => {
-    // TODO: Replace with real API call
     try {
-      setJobs(prevJobs => 
-        prevJobs.map(job => 
-          job.id === jobId ? { ...job, status } : job
-        )
-      );
+      const { error } = await supabase
+        .from('jobs')
+        .update({ status })
+        .eq('id', jobId);
+
+      if (error) {
+        console.error('Error updating job status:', error);
+        return false;
+      }
+
+      await refreshJobs();
       return true;
     } catch (error) {
       console.error('Error updating job status:', error);
@@ -135,26 +151,24 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const applyToJob = async (applicationData: Omit<JobApplication, 'id' | 'appliedAt'>): Promise<boolean> => {
-    // TODO: Replace with real API call
+  const applyToJob = async (jobId: string, coverLetter: string): Promise<boolean> => {
+    if (!user) return false;
+
     try {
-      const newApplication: JobApplication = {
-        ...applicationData,
-        id: Date.now().toString(),
-        appliedAt: new Date().toISOString()
-      };
-      
-      setApplications(prevApps => [...prevApps, newApplication]);
-      
-      // Add application to job
-      setJobs(prevJobs => 
-        prevJobs.map(job => 
-          job.id === applicationData.jobId 
-            ? { ...job, applications: [...job.applications, newApplication] }
-            : job
-        )
-      );
-      
+      const { error } = await supabase.from('applications').insert([
+        {
+          job_id: jobId,
+          student_id: user.id,
+          cover_letter: coverLetter,
+        },
+      ]);
+
+      if (error) {
+        console.error('Error applying to job:', error);
+        return false;
+      }
+
+      await refreshApplications();
       return true;
     } catch (error) {
       console.error('Error applying to job:', error);
@@ -162,32 +176,12 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const deleteJob = async (jobId: string): Promise<boolean> => {
-    // TODO: Replace with real API call
-    try {
-      setJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
-      return true;
-    } catch (error) {
-      console.error('Error deleting job:', error);
-      return false;
-    }
-  };
-
   const getJobsByEmployer = (employerId: string) => {
-    return jobs.filter(job => job.employerId === employerId);
+    return jobs.filter(job => job.employer_id === employerId);
   };
 
   const getApprovedJobs = () => {
     return jobs.filter(job => job.status === 'approved');
-  };
-
-  const getAnalytics = () => {
-    return {
-      total: jobs.length,
-      approved: jobs.filter(job => job.status === 'approved').length,
-      pending: jobs.filter(job => job.status === 'pending').length,
-      rejected: jobs.filter(job => job.status === 'rejected').length
-    };
   };
 
   const value = {
@@ -198,8 +192,8 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     applyToJob,
     getJobsByEmployer,
     getApprovedJobs,
-    deleteJob,
-    getAnalytics
+    refreshJobs,
+    isLoading,
   };
 
   return (
