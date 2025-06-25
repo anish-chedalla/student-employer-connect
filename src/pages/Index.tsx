@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,23 +13,8 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       <StickyNavigation />
       
-      {/* Header */}
-      <header id="home" className="bg-white shadow-sm border-b pt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-3">
-              <GraduationCap className="h-8 w-8 text-blue-600" />
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">SchoolConnect</h1>
-                <p className="text-sm text-gray-600">Career Services Portal</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div id="home" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
         <div className="text-center">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
             Connect Students with
