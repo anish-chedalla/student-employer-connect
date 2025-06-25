@@ -42,32 +42,74 @@ export const Applications = () => {
       }
 
       try {
-        const { data, error } = await supabase
+        // First get applications for employer's jobs
+        const { data: applicationsData, error: applicationsError } = await supabase
           .from('applications')
           .select(`
-            *,
-            jobs!inner(title, company),
-            profiles!inner(full_name, email)
+            id,
+            job_id,
+            student_id,
+            status,
+            cover_letter,
+            resume_url,
+            applied_at
           `)
           .in('job_id', jobIds);
 
-        if (error) {
-          console.error('Error fetching applications:', error);
+        if (applicationsError) {
+          console.error('Error fetching applications:', applicationsError);
           return;
         }
 
-        // Transform the data to match our interface
-        const transformedData = (data || []).map(app => ({
-          ...app,
-          job: {
-            title: app.jobs.title,
-            company: app.jobs.company
-          },
-          student: {
-            full_name: app.profiles.full_name,
-            email: app.profiles.email
-          }
-        }));
+        if (!applicationsData || applicationsData.length === 0) {
+          setApplications([]);
+          setIsLoading(false);
+          return;
+        }
+
+        // Get unique student IDs
+        const studentIds = [...new Set(applicationsData.map(app => app.student_id))];
+
+        // Get student profiles
+        const { data: profilesData, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .in('id', studentIds);
+
+        if (profilesError) {
+          console.error('Error fetching profiles:', profilesError);
+          return;
+        }
+
+        // Get job details
+        const { data: jobsData, error: jobsError } = await supabase
+          .from('jobs')
+          .select('id, title, company')
+          .in('id', jobIds);
+
+        if (jobsError) {
+          console.error('Error fetching jobs:', jobsError);
+          return;
+        }
+
+        // Combine the data
+        const transformedData: Application[] = applicationsData.map(app => {
+          const profile = profilesData?.find(p => p.id === app.student_id);
+          const job = jobsData?.find(j => j.id === app.job_id);
+
+          return {
+            ...app,
+            status: app.status as 'pending' | 'reviewed' | 'accepted' | 'rejected',
+            job: {
+              title: job?.title || 'Unknown Job',
+              company: job?.company || 'Unknown Company'
+            },
+            student: {
+              full_name: profile?.full_name || 'Unknown Student',
+              email: profile?.email || 'Unknown Email'
+            }
+          };
+        });
 
         setApplications(transformedData);
       } catch (error) {
