@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +10,7 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/s
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
 import { useToast } from '@/hooks/use-toast';
-import { GraduationCap, Search, MapPin, Clock, DollarSign, Building2, FileText, Send, Calendar, Users, CheckCircle } from 'lucide-react';
+import { GraduationCap, Search, MapPin, Clock, DollarSign, Building2, FileText, Send, Calendar, Users } from 'lucide-react';
 import StudentSidebar from '../../components/StudentSidebar';
 
 const StudentDashboard = () => {
@@ -23,7 +22,7 @@ const StudentDashboard = () => {
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [applicationMessage, setApplicationMessage] = useState('');
   const [isApplying, setIsApplying] = useState(false);
-  const [activeSection, setActiveSection] = useState('job-search');
+  const [activeSection, setActiveSection] = useState('browse-jobs');
 
   const approvedJobs = getApprovedJobs();
   
@@ -68,6 +67,7 @@ const StudentDashboard = () => {
 
   const renderContent = () => {
     switch (activeSection) {
+      case 'browse-jobs':
       case 'job-search':
         return (
           <div className="space-y-6">
@@ -100,19 +100,19 @@ const StudentDashboard = () => {
               </Badge>
             </div>
 
-            <div className="grid gap-6">
-              {filteredJobs.length === 0 ? (
-                <Card className="w-full">
-                  <CardContent className="p-12 text-center">
-                    <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
-                    <p className="text-gray-600">
-                      {searchTerm ? 'Try adjusting your search terms' : 'New opportunities will appear here when posted'}
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : (
-                filteredJobs.map((job) => (
+            {filteredJobs.length === 0 ? (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
+                  <p className="text-gray-600">
+                    {searchTerm ? 'Try adjusting your search terms' : 'New opportunities will appear here when posted'}
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-6">
+                {filteredJobs.map((job) => (
                   <Card key={job.id} className="hover:shadow-lg transition-shadow">
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start mb-4">
@@ -121,6 +121,9 @@ const StudentDashboard = () => {
                           <p className="text-lg text-gray-700 mb-2">{job.company}</p>
                           <p className="text-gray-600 line-clamp-3">{job.description}</p>
                         </div>
+                        <Badge variant="outline" className="ml-4">
+                          {job.status}
+                        </Badge>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -223,9 +226,9 @@ const StudentDashboard = () => {
                       </div>
                     </CardContent>
                   </Card>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         );
 
@@ -321,10 +324,10 @@ const StudentDashboard = () => {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Jobs Accepted</p>
-                      <p className="text-2xl font-bold text-gray-900">0</p>
+                      <p className="text-sm font-medium text-gray-600">Profile Views</p>
+                      <p className="text-2xl font-bold text-gray-900">12</p>
                     </div>
-                    <CheckCircle className="h-8 w-8 text-green-600" />
+                    <Users className="h-8 w-8 text-purple-600" />
                   </div>
                 </CardContent>
               </Card>
