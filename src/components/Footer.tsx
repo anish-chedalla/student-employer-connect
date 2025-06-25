@@ -28,7 +28,7 @@ const Footer = () => {
             <div className="space-y-3 text-sm text-gray-400">
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4" />
-                <span>career@schoolconnect.edu</span>
+                <span>ideonise@pvlearners.net</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4" />
@@ -36,7 +36,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4" />
-                <span>123 Education St, Learning City</span>
+                <span>3950 E. Bell Road</span>
               </div>
             </div>
           </div>
