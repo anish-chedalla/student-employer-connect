@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -74,7 +73,7 @@ const Index = () => {
           
           <div className="grid gap-6 md:grid-cols-3 max-w-4xl mx-auto">
             {/* Student Portal */}
-            <Card className="hover:shadow-lg transition-shadow">
+            <Card className="hover:shadow-lg transition-shadow h-full flex flex-col">
               <CardHeader className="text-center">
                 <div className="mx-auto h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
                   <GraduationCap className="h-6 w-6 text-blue-600" />
@@ -84,24 +83,22 @@ const Index = () => {
                   Browse job opportunities, submit applications, and track your career journey
                 </CardDescription>
               </CardHeader>
-              <CardContent className="text-center">
-                <div className="space-y-3">
-                  <div className="text-sm text-gray-600">
-                    ✓ Browse approved job postings<br />
-                    ✓ Apply with resume upload<br />
-                    ✓ Track application status
-                  </div>
-                  <Link to="/student/login">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                      Student Login
-                    </Button>
-                  </Link>
+              <CardContent className="text-center flex-1 flex flex-col justify-between">
+                <div className="text-sm text-gray-600 mb-6">
+                  ✓ Browse approved job postings<br />
+                  ✓ Apply with resume upload<br />
+                  ✓ Track application status
                 </div>
+                <Link to="/student/login">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                    Student Login
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 
             {/* Employer Portal */}
-            <Card className="hover:shadow-lg transition-shadow">
+            <Card className="hover:shadow-lg transition-shadow h-full flex flex-col">
               <CardHeader className="text-center">
                 <div className="mx-auto h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
                   <Building2 className="h-6 w-6 text-green-600" />
@@ -111,24 +108,22 @@ const Index = () => {
                   Post job opportunities and connect with talented students
                 </CardDescription>
               </CardHeader>
-              <CardContent className="text-center">
-                <div className="space-y-3">
-                  <div className="text-sm text-gray-600">
-                    ✓ Submit job postings<br />
-                    ✓ Track posting status<br />
-                    ✓ Connect with students
-                  </div>
-                  <Link to="/employer/login">
-                    <Button className="w-full bg-green-600 hover:bg-green-700">
-                      Employer Login
-                    </Button>
-                  </Link>
+              <CardContent className="text-center flex-1 flex flex-col justify-between">
+                <div className="text-sm text-gray-600 mb-6">
+                  ✓ Submit job postings<br />
+                  ✓ Track posting status<br />
+                  ✓ Connect with students
                 </div>
+                <Link to="/employer/login">
+                  <Button className="w-full bg-green-600 hover:bg-green-700">
+                    Employer Login
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 
             {/* Admin Portal */}
-            <Card className="hover:shadow-lg transition-shadow">
+            <Card className="hover:shadow-lg transition-shadow h-full flex flex-col">
               <CardHeader className="text-center">
                 <div className="mx-auto h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
                   <Shield className="h-6 w-6 text-purple-600" />
@@ -138,19 +133,17 @@ const Index = () => {
                   Manage job postings and oversee the career services platform
                 </CardDescription>
               </CardHeader>
-              <CardContent className="text-center">
-                <div className="space-y-3">
-                  <div className="text-sm text-gray-600">
-                    ✓ Review job postings<br />
-                    ✓ Platform analytics<br />
-                    ✓ User management
-                  </div>
-                  <Link to="/admin/login">
-                    <Button className="w-full bg-purple-600 hover:bg-purple-700">
-                      Admin Login
-                    </Button>
-                  </Link>
+              <CardContent className="text-center flex-1 flex flex-col justify-between">
+                <div className="text-sm text-gray-600 mb-6">
+                  ✓ Review job postings<br />
+                  ✓ Platform analytics<br />
+                  ✓ User management
                 </div>
+                <Link to="/admin/login">
+                  <Button className="w-full bg-purple-600 hover:bg-purple-700">
+                    Admin Login
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </div>
