@@ -12,7 +12,7 @@ const FeatureHighlights = () => {
     },
     {
       icon: Shield,
-      title: 'Secure Login System',
+      title: '2FA-Enabled Login System',
       description: 'Multi-tier authentication system with role-based access for students, employers, and administrators.',
       color: 'text-green-600'
     },
