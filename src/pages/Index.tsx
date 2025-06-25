@@ -1,12 +1,21 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { GraduationCap, Building2, Shield, Users, Briefcase, Clock } from "lucide-react";
+import StickyNavigation from "@/components/StickyNavigation";
+import FeatureHighlights from "@/components/FeatureHighlights";
+import Testimonials from "@/components/Testimonials";
+import Footer from "@/components/Footer";
+
 const Index = () => {
-  return <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      <StickyNavigation />
+      
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header id="home" className="bg-white shadow-sm border-b pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
@@ -15,11 +24,6 @@ const Index = () => {
                 <h1 className="text-xl font-bold text-gray-900">SchoolConnect</h1>
                 <p className="text-sm text-gray-600">Career Services Portal</p>
               </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Badge variant="secondary" className="hidden sm:flex">
-                FBLA 2024-25
-              </Badge>
             </div>
           </div>
         </div>
@@ -64,7 +68,7 @@ const Index = () => {
         </div>
 
         {/* Login Options */}
-        <div className="mt-16">
+        <div id="job-postings" className="mt-16">
           <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
             Choose Your Portal
           </h2>
@@ -146,7 +150,7 @@ const Index = () => {
         </div>
 
         {/* Features Section */}
-        <div className="mt-20">
+        <div id="about" className="mt-20">
           <div className="text-center">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900">
               Why Choose SchoolConnect?
@@ -196,19 +200,11 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-gray-50 border-t mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <p className="text-gray-600">
-              © 2024 SchoolConnect Career Services Portal. Built for FBLA Website Coding & Development Competition.
-            </p>
-            <p className="text-sm text-gray-500 mt-2">
-              Developed with ❤️ for our school's guidance department
-            </p>
-          </div>
-        </div>
-      </footer>
-    </div>;
+      <FeatureHighlights />
+      <Testimonials />
+      <Footer />
+    </div>
+  );
 };
+
 export default Index;
