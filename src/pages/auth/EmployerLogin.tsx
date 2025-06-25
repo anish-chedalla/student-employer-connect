@@ -24,11 +24,13 @@ const EmployerLogin = () => {
 
   // Handle automatic redirect when user becomes authenticated
   useEffect(() => {
-    if (user && profile && profile.role === 'employer' && !isLoading) {
+    console.log('Auth state check:', { user: !!user, profile: profile?.role, isLoading });
+    if (user && profile && profile.role === 'employer') {
       console.log('User authenticated as employer, redirecting to dashboard');
+      setIsLoading(false); // Ensure loading is stopped
       navigate('/employer/dashboard');
     }
-  }, [user, profile, navigate, isLoading]);
+  }, [user, profile, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
