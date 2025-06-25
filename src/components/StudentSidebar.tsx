@@ -37,11 +37,6 @@ const StudentSidebar = ({ activeSection, onSectionChange }: StudentSidebarProps)
       title: "My Applications",
       id: "my-applications",
       icon: Send,
-    },
-    {
-      title: "Application Status",
-      id: "application-status",
-      icon: User,
     }
   ];
 

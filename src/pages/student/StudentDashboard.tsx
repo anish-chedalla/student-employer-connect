@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,11 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
 import { useToast } from '@/hooks/use-toast';
-import { GraduationCap, Search, MapPin, Clock, DollarSign, Building2, FileText, Send, Calendar, Users } from 'lucide-react';
+import { GraduationCap, Search, MapPin, Clock, DollarSign, Building2, FileText, Send, Calendar, Users, Filter, ChevronDown } from 'lucide-react';
 import StudentSidebar from '../../components/StudentSidebar';
 
 const StudentDashboard = () => {
@@ -23,16 +25,30 @@ const StudentDashboard = () => {
   const [applicationMessage, setApplicationMessage] = useState('');
   const [isApplying, setIsApplying] = useState(false);
   const [activeSection, setActiveSection] = useState('job-search');
+  const [statusFilters, setStatusFilters] = useState({
+    accepted: true,
+    rejected: true,
+    reviewed: true,
+    pending: true
+  });
 
   const approvedJobs = getApprovedJobs();
   const studentApplications = getStudentApplications();
-  const acceptedApplications = studentApplications.filter(app => app.status === 'accepted');
   
   const filteredJobs = approvedJobs.filter(job =>
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
     job.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Sort applications: accepted first, then rejected, then reviewed, then pending
+  const sortedApplications = studentApplications.sort((a, b) => {
+    const statusOrder = { accepted: 0, rejected: 1, reviewed: 2, pending: 3 };
+    return statusOrder[a.status] - statusOrder[b.status];
+  });
+
+  // Filter applications based on selected status filters
+  const filteredApplications = sortedApplications.filter(app => statusFilters[app.status]);
 
   const handleApply = async () => {
     if (!selectedJob || !user) return;
@@ -77,12 +93,28 @@ const StudentDashboard = () => {
     return job ? job.company : 'Unknown Company';
   };
 
+  const toggleStatusFilter = (status: string) => {
+    setStatusFilters(prev => ({
+      ...prev,
+      [status]: !prev[status]
+    }));
+  };
+
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case 'accepted': return 'default';
+      case 'rejected': return 'destructive';
+      case 'reviewed': return 'secondary';
+      default: return 'outline';
+    }
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'job-search':
         return (
           <div className="space-y-6">
-            {/* Search Bar */}
+            {/* Search Bar at the top */}
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center space-x-4">
@@ -243,21 +275,65 @@ const StudentDashboard = () => {
       case 'my-applications':
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">My Applications</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-900">My Applications</h2>
+              
+              {/* Status Filter Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="flex items-center space-x-2">
+                    <Filter className="h-4 w-4" />
+                    <span>Filter Status</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-48 bg-white border shadow-lg z-50">
+                  <DropdownMenuCheckboxItem
+                    checked={statusFilters.accepted}
+                    onCheckedChange={() => toggleStatusFilter('accepted')}
+                  >
+                    Accepted
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={statusFilters.rejected}
+                    onCheckedChange={() => toggleStatusFilter('rejected')}
+                  >
+                    Rejected
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={statusFilters.reviewed}
+                    onCheckedChange={() => toggleStatusFilter('reviewed')}
+                  >
+                    Reviewed
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={statusFilters.pending}
+                    onCheckedChange={() => toggleStatusFilter('pending')}
+                  >
+                    Pending
+                  </DropdownMenuCheckboxItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
             
-            {studentApplications.length === 0 ? (
+            {filteredApplications.length === 0 ? (
               <Card>
                 <CardContent className="p-12 text-center">
                   <Send className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No applications yet</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    {studentApplications.length === 0 ? 'No applications yet' : 'No applications match your filters'}
+                  </h3>
                   <p className="text-gray-600">
-                    Applications you submit will appear here
+                    {studentApplications.length === 0 
+                      ? 'Applications you submit will appear here'
+                      : 'Try adjusting your status filters to see more applications'
+                    }
                   </p>
                 </CardContent>
               </Card>
             ) : (
               <div className="grid gap-6">
-                {studentApplications.map((application) => (
+                {filteredApplications.map((application) => (
                   <Card key={application.id}>
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start mb-4">
@@ -272,12 +348,7 @@ const StudentDashboard = () => {
                             Applied on {formatDate(application.applied_at)}
                           </p>
                         </div>
-                        <Badge variant={
-                          application.status === 'accepted' ? 'default' : 
-                          application.status === 'rejected' ? 'destructive' : 
-                          application.status === 'reviewed' ? 'secondary' : 
-                          'outline'
-                        }>
+                        <Badge variant={getStatusBadgeVariant(application.status)}>
                           {application.status}
                         </Badge>
                       </div>
@@ -288,61 +359,6 @@ const StudentDashboard = () => {
                           <p className="text-sm text-gray-700">{application.cover_letter}</p>
                         </div>
                       )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-
-      case 'application-status':
-        return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Application Status</h2>
-            
-            {studentApplications.length === 0 ? (
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Track your progress</h3>
-                  <p className="text-gray-600">
-                    Status updates for your applications will appear here
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid gap-4">
-                {studentApplications.map((application) => (
-                  <Card key={application.id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className={`w-3 h-3 rounded-full ${
-                            application.status === 'accepted' ? 'bg-green-500' :
-                            application.status === 'rejected' ? 'bg-red-500' :
-                            application.status === 'reviewed' ? 'bg-yellow-500' :
-                            'bg-gray-400'
-                          }`} />
-                          <div>
-                            <p className="font-medium">{getJobTitle(application.job_id)}</p>
-                            <p className="text-sm text-gray-600">{getJobCompany(application.job_id)}</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <Badge variant={
-                            application.status === 'accepted' ? 'default' : 
-                            application.status === 'rejected' ? 'destructive' : 
-                            application.status === 'reviewed' ? 'secondary' : 
-                            'outline'
-                          }>
-                            {application.status}
-                          </Badge>
-                          <p className="text-sm text-gray-600 mt-1">
-                            {formatDate(application.applied_at)}
-                          </p>
-                        </div>
-                      </div>
                     </CardContent>
                   </Card>
                 ))}
@@ -381,39 +397,6 @@ const StudentDashboard = () => {
           </header>
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {/* Stats Cards */}
-            <div className="space-y-6 mb-8">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600">Available Jobs</p>
-                        <p className="text-2xl font-bold text-gray-900">{approvedJobs.length}</p>
-                      </div>
-                      <Building2 className="h-8 w-8 text-blue-600" />
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600">Applications Sent</p>
-                        <p className="text-2xl font-bold text-gray-900">{studentApplications.length}</p>
-                      </div>
-                      <Send className="h-8 w-8 text-green-600" />
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600">Acceptances</p>
-                        <p className="text-2xl font-bold text-gray-900">{acceptedApplications.length}</p>
-                      </div>
-                      <Users className="h-8 w-8 text-purple-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
             {/* Main Content */}
             {renderContent()}
           </div>
