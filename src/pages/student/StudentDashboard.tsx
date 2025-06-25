@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +26,7 @@ const StudentDashboard = () => {
 
   const approvedJobs = getApprovedJobs();
   const studentApplications = getStudentApplications();
+  const acceptedApplications = studentApplications.filter(app => app.status === 'accepted');
   
   const filteredJobs = approvedJobs.filter(job =>
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -381,10 +381,10 @@ const StudentDashboard = () => {
           </header>
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {/* Stats Cards - Updated to match search box width */}
-            <Card className="mb-8">
-              <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Stats Cards - Updated to match search box spacing */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <Card>
+                <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600">Available Jobs</p>
@@ -392,7 +392,11 @@ const StudentDashboard = () => {
                     </div>
                     <Building2 className="h-8 w-8 text-blue-600" />
                   </div>
-                  
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600">Applications Sent</p>
@@ -400,17 +404,21 @@ const StudentDashboard = () => {
                     </div>
                     <Send className="h-8 w-8 text-green-600" />
                   </div>
-                  
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Profile Views</p>
-                      <p className="text-2xl font-bold text-gray-900">12</p>
+                      <p className="text-sm font-medium text-gray-600">Acceptances</p>
+                      <p className="text-2xl font-bold text-gray-900">{acceptedApplications.length}</p>
                     </div>
                     <Users className="h-8 w-8 text-purple-600" />
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Main Content */}
             {renderContent()}
