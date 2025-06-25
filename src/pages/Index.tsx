@@ -7,21 +7,16 @@ import StickyNavigation from "@/components/StickyNavigation";
 import FeatureHighlights from "@/components/FeatureHighlights";
 import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
-
 const Index = () => {
-  return (
-    <div className="min-h-screen bg-white">
+  return <div className="min-h-screen bg-white">
       <StickyNavigation />
       
       {/* Hero Section */}
       <section id="home" className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 overflow-hidden">
         {/* Background Image Placeholder */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
-          style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&h=1080&fit=crop')"
-          }}
-        />
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30" style={{
+        backgroundImage: "url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&h=1080&fit=crop')"
+      }} />
         
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/80 via-indigo-900/70 to-purple-900/60" />
@@ -127,11 +122,7 @@ const Index = () => {
 
             {/* Image with Student Badge */}
             <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&h=400&fit=crop"
-                alt="Student using laptop"
-                className="rounded-2xl shadow-2xl w-full"
-              />
+              <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&h=400&fit=crop" alt="Student using laptop" className="rounded-2xl shadow-2xl w-full" />
               <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center shadow-lg">
                 <div className="text-white text-center">
                   <div className="text-2xl font-bold">Free</div>
@@ -145,11 +136,7 @@ const Index = () => {
           <div className="grid gap-16 lg:grid-cols-2 items-center">
             {/* Image with Employer Badge */}
             <div className="relative order-2 lg:order-1">
-              <img
-                src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=600&h=400&fit=crop"
-                alt="Professional workspace"
-                className="rounded-2xl shadow-2xl w-full"
-              />
+              <img src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=600&h=400&fit=crop" alt="Professional workspace" className="rounded-2xl shadow-2xl w-full" />
               <div className="absolute -top-6 -left-6 w-32 h-32 bg-gradient-to-br from-green-600 to-green-700 rounded-2xl flex items-center justify-center shadow-lg">
                 <div className="text-white text-center">
                   <div className="text-2xl font-bold">Verified</div>
@@ -216,9 +203,7 @@ const Index = () => {
                     <GraduationCap className="h-8 w-8 text-white" />
                   </div>
                   <CardTitle className="text-2xl group-hover:text-blue-700 transition-colors duration-300">Student Portal</CardTitle>
-                  <CardDescription className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
-                    Discover opportunities and launch your career
-                  </CardDescription>
+                  <CardDescription className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">Discover jobs and launch your career</CardDescription>
                 </CardHeader>
                 <CardContent className="text-center space-y-6">
                   <div className="space-y-3 text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
@@ -350,19 +335,13 @@ const Index = () => {
             </div>
             
             <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=600&h=400&fit=crop"
-                alt="Students collaborating"
-                className="rounded-2xl shadow-2xl w-full"
-              />
+              <img src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=600&h=400&fit=crop" alt="Students collaborating" className="rounded-2xl shadow-2xl w-full" />
             </div>
           </div>
         </div>
       </section>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
