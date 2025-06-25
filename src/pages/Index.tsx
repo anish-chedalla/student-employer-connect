@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -59,22 +60,22 @@ const Index = () => {
           
           <div className="grid gap-6 md:grid-cols-3 max-w-4xl mx-auto">
             {/* Student Portal */}
-            <Card className="hover:shadow-lg transition-shadow h-full flex flex-col">
+            <Card className="hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 hover:bg-gradient-to-br hover:from-blue-50 hover:to-white hover:ring-2 hover:ring-blue-200 h-full flex flex-col group cursor-pointer">
               <CardHeader className="text-center">
-                <div className="mx-auto h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <GraduationCap className="h-6 w-6 text-blue-600" />
+                <div className="mx-auto h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-200 group-hover:shadow-lg transition-all duration-300">
+                  <GraduationCap className="h-6 w-6 text-blue-600 group-hover:scale-110 transition-transform duration-300" />
                 </div>
-                <CardTitle className="text-xl">Student Portal</CardTitle>
-                <CardDescription>Browse job opportunities, submit applications, and track your career</CardDescription>
+                <CardTitle className="text-xl group-hover:text-blue-700 transition-colors duration-300">Student Portal</CardTitle>
+                <CardDescription className="group-hover:text-gray-700 transition-colors duration-300">Browse job opportunities, submit applications, and track your career</CardDescription>
               </CardHeader>
               <CardContent className="text-center flex-1 flex flex-col justify-between">
-                <div className="text-sm text-gray-600 mb-6">
+                <div className="text-sm text-gray-600 mb-6 group-hover:text-gray-700 transition-colors duration-300">
                   ✓ Browse approved job postings<br />
                   ✓ Apply with resume upload<br />
                   ✓ Track application status
                 </div>
                 <Link to="/student/login">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 group-hover:shadow-lg transition-all duration-300">
                     Student Login
                   </Button>
                 </Link>
@@ -82,24 +83,24 @@ const Index = () => {
             </Card>
 
             {/* Employer Portal */}
-            <Card className="hover:shadow-lg transition-shadow h-full flex flex-col">
+            <Card className="hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 hover:bg-gradient-to-br hover:from-green-50 hover:to-white hover:ring-2 hover:ring-green-200 h-full flex flex-col group cursor-pointer scale-105 shadow-lg shadow-green-100 bg-gradient-to-br from-green-50 to-white ring-2 ring-green-200">
               <CardHeader className="text-center">
-                <div className="mx-auto h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                  <Building2 className="h-6 w-6 text-green-600" />
+                <div className="mx-auto h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-200 group-hover:shadow-lg transition-all duration-300 shadow-lg bg-green-200">
+                  <Building2 className="h-6 w-6 text-green-600 group-hover:scale-110 transition-transform duration-300 scale-110" />
                 </div>
-                <CardTitle className="text-xl">Employer Portal</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-xl group-hover:text-green-700 transition-colors duration-300 text-green-700">Employer Portal</CardTitle>
+                <CardDescription className="group-hover:text-gray-700 transition-colors duration-300 text-gray-700">
                   Post job opportunities and connect with talented students
                 </CardDescription>
               </CardHeader>
               <CardContent className="text-center flex-1 flex flex-col justify-between">
-                <div className="text-sm text-gray-600 mb-6">
+                <div className="text-sm text-gray-600 mb-6 group-hover:text-gray-700 transition-colors duration-300 text-gray-700">
                   ✓ Submit job postings<br />
                   ✓ Track posting status<br />
                   ✓ Connect with students
                 </div>
                 <Link to="/employer/login">
-                  <Button className="w-full bg-green-600 hover:bg-green-700">
+                  <Button className="w-full bg-green-600 hover:bg-green-700 group-hover:shadow-lg transition-all duration-300 shadow-lg">
                     Employer Login
                   </Button>
                 </Link>
@@ -107,24 +108,24 @@ const Index = () => {
             </Card>
 
             {/* Admin Portal */}
-            <Card className="hover:shadow-lg transition-shadow h-full flex flex-col">
+            <Card className="hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 hover:bg-gradient-to-br hover:from-purple-50 hover:to-white hover:ring-2 hover:ring-purple-200 h-full flex flex-col group cursor-pointer">
               <CardHeader className="text-center">
-                <div className="mx-auto h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                  <Shield className="h-6 w-6 text-purple-600" />
+                <div className="mx-auto h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-200 group-hover:shadow-lg transition-all duration-300">
+                  <Shield className="h-6 w-6 text-purple-600 group-hover:scale-110 transition-transform duration-300" />
                 </div>
-                <CardTitle className="text-xl">Admin Portal</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-xl group-hover:text-purple-700 transition-colors duration-300">Admin Portal</CardTitle>
+                <CardDescription className="group-hover:text-gray-700 transition-colors duration-300">
                   Manage job postings and oversee the career services platform
                 </CardDescription>
               </CardHeader>
               <CardContent className="text-center flex-1 flex flex-col justify-between">
-                <div className="text-sm text-gray-600 mb-6">
+                <div className="text-sm text-gray-600 mb-6 group-hover:text-gray-700 transition-colors duration-300">
                   ✓ Review job postings<br />
                   ✓ Platform analytics<br />
                   ✓ User management
                 </div>
                 <Link to="/admin/login">
-                  <Button className="w-full bg-purple-600 hover:bg-purple-700">
+                  <Button className="w-full bg-purple-600 hover:bg-purple-700 group-hover:shadow-lg transition-all duration-300">
                     Admin Login
                   </Button>
                 </Link>
@@ -145,37 +146,37 @@ const Index = () => {
           </div>
 
           <div className="mt-12 grid gap-8 lg:grid-cols-2">
-            <div className="bg-white rounded-xl p-8 shadow-sm border">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">For Students</h3>
-              <ul className="space-y-3 text-gray-600">
+            <div className="bg-white rounded-xl p-8 shadow-sm border transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl hover:shadow-blue-100 hover:bg-gradient-to-br hover:from-blue-50 hover:to-white hover:ring-2 hover:ring-blue-200 group cursor-pointer">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 group-hover:text-blue-700 transition-colors duration-300">For Students</h3>
+              <ul className="space-y-3 text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
                 <li className="flex items-start">
-                  <Clock className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
+                  <Clock className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" />
                   Real-time job posting updates from verified employers
                 </li>
                 <li className="flex items-start">
-                  <Shield className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
+                  <Shield className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" />
                   Secure application process with resume upload
                 </li>
                 <li className="flex items-start">
-                  <Users className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
+                  <Users className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" />
                   Direct connection with guidance counselors
                 </li>
               </ul>
             </div>
 
-            <div className="bg-white rounded-xl p-8 shadow-sm border">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">For Employers</h3>
-              <ul className="space-y-3 text-gray-600">
+            <div className="bg-white rounded-xl p-8 shadow-sm border transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl hover:shadow-green-100 hover:bg-gradient-to-br hover:from-green-50 hover:to-white hover:ring-2 hover:ring-green-200 group cursor-pointer scale-105 shadow-lg shadow-green-100 bg-gradient-to-br from-green-50 to-white ring-2 ring-green-200">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 group-hover:text-green-700 transition-colors duration-300 text-green-700">For Employers</h3>
+              <ul className="space-y-3 text-gray-600 group-hover:text-gray-700 transition-colors duration-300 text-gray-700">
                 <li className="flex items-start">
-                  <GraduationCap className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
+                  <GraduationCap className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300 scale-110" />
                   Access to pre-screened student talent pool
                 </li>
                 <li className="flex items-start">
-                  <Briefcase className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
+                  <Briefcase className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300 scale-110" />
                   Streamlined job posting and applicant management
                 </li>
                 <li className="flex items-start">
-                  <Building2 className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
+                  <Building2 className="h-5 w-5 text-green-600 mt-0.5 mr-3 flex-shrink-0 group-hover:scale-110 transition-transform duration-300 scale-110" />
                   Partnership with educational institution values
                 </li>
               </ul>
