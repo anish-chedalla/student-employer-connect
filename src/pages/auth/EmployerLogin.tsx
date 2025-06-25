@@ -55,18 +55,29 @@ const EmployerLogin = () => {
 
   if (showVerificationMessage) {
     return (
-      <div className="min-h-screen flex">
-        {/* Left side - Verification Message */}
-        <div className="flex-1 flex items-center justify-center p-8 bg-gradient-to-br from-green-50 via-white to-emerald-50">
-          <div className="w-full max-w-md">
-            <div className="text-center mb-8">
-              <Link to="/" className="inline-flex items-center text-green-600 hover:text-green-700 mb-6 transition-colors">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
-              </Link>
-            </div>
+      <div className="min-h-screen relative">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')`
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-green-900/80 via-green-800/70 to-emerald-900/80"></div>
+        </div>
 
-            <Card className="border-0 shadow-lg">
+        {/* Home Button */}
+        <div className="absolute top-6 left-6 z-20">
+          <Link to="/" className="inline-flex items-center text-white hover:text-green-200 transition-colors bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Home
+          </Link>
+        </div>
+
+        {/* Verification Message */}
+        <div className="relative z-10 min-h-screen flex items-center justify-center p-8">
+          <div className="w-full max-w-md">
+            <Card className="border-0 shadow-2xl bg-white/95 backdrop-blur-sm">
               <CardHeader className="text-center pb-4">
                 <div className="flex justify-center mb-4">
                   <CheckCircle className="h-16 w-16 text-green-600" />
@@ -101,43 +112,47 @@ const EmployerLogin = () => {
             </Card>
           </div>
         </div>
-
-        {/* Right side - Image */}
-        <div className="hidden lg:flex flex-1 relative">
-          <img
-            src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
-            alt="Professional office"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-green-900/20 to-emerald-900/20"></div>
-        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left side - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-gradient-to-br from-green-50 via-white to-emerald-50">
+    <div className="min-h-screen relative">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')`
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-green-900/80 via-green-800/70 to-emerald-900/80"></div>
+      </div>
+
+      {/* Home Button */}
+      <div className="absolute top-6 left-6 z-20">
+        <Link to="/" className="inline-flex items-center text-white hover:text-green-200 transition-colors bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Home
+        </Link>
+      </div>
+
+      {/* Login Form */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          <div className="mb-8">
-            <Link to="/" className="inline-flex items-center text-green-600 hover:text-green-700 mb-6 transition-colors">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
-            </Link>
-            <div className="flex items-center space-x-3 mb-2">
-              <Building2 className="h-8 w-8 text-green-600" />
-              <h1 className="text-3xl font-bold text-gray-900">Employer Portal</h1>
+          <div className="mb-8 text-center">
+            <div className="flex items-center justify-center space-x-3 mb-4">
+              <Building2 className="h-10 w-10 text-white" />
+              <h1 className="text-4xl font-bold text-white">Employer Portal</h1>
             </div>
-            <p className="text-gray-600">Connect with top talent and grow your team</p>
+            <p className="text-green-100 text-lg">Connect with top talent and grow your team</p>
           </div>
 
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-2xl bg-white/95 backdrop-blur-sm">
             <CardHeader className="pb-4">
-              <CardTitle className="text-xl">
+              <CardTitle className="text-2xl text-center">
                 {isSignup ? 'Create Employer Account' : 'Employer Login'}
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-center">
                 {isSignup 
                   ? 'Partner with us to access exceptional student talent'
                   : 'Welcome back! Ready to find your next great hire?'
@@ -230,20 +245,6 @@ const EmployerLogin = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
-      </div>
-
-      {/* Right side - Image */}
-      <div className="hidden lg:flex flex-1 relative">
-        <img
-          src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
-          alt="Professional team meeting"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-green-900/20 to-emerald-900/20"></div>
-        <div className="absolute bottom-8 left-8 text-white">
-          <h2 className="text-2xl font-bold mb-2">Find Exceptional Talent</h2>
-          <p className="text-green-100 max-w-md">Access a curated pool of ambitious students and recent graduates ready to make an impact at your company.</p>
         </div>
       </div>
     </div>

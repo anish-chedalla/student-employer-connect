@@ -32,26 +32,40 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left side - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-gradient-to-br from-purple-50 via-white to-indigo-50">
+    <div className="min-h-screen relative">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')`
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-purple-800/70 to-indigo-900/80"></div>
+      </div>
+
+      {/* Home Button */}
+      <div className="absolute top-6 left-6 z-20">
+        <Link to="/" className="inline-flex items-center text-white hover:text-purple-200 transition-colors bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Home
+        </Link>
+      </div>
+
+      {/* Login Form */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          <div className="mb-8">
-            <Link to="/" className="inline-flex items-center text-purple-600 hover:text-purple-700 mb-6 transition-colors">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
-            </Link>
-            <div className="flex items-center space-x-3 mb-2">
-              <Shield className="h-8 w-8 text-purple-600" />
-              <h1 className="text-3xl font-bold text-gray-900">Admin Portal</h1>
+          <div className="mb-8 text-center">
+            <div className="flex items-center justify-center space-x-3 mb-4">
+              <Shield className="h-10 w-10 text-white" />
+              <h1 className="text-4xl font-bold text-white">Admin Portal</h1>
             </div>
-            <p className="text-gray-600">Secure access to the career services administration panel</p>
+            <p className="text-purple-100 text-lg">Secure access to the career services administration panel</p>
           </div>
 
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-2xl bg-white/95 backdrop-blur-sm">
             <CardHeader className="pb-4">
-              <CardTitle className="text-xl">Administrator Login</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-2xl text-center">Administrator Login</CardTitle>
+              <CardDescription className="text-center">
                 Welcome back! Please sign in to your admin account.
               </CardDescription>
             </CardHeader>
@@ -100,20 +114,6 @@ const AdminLogin = () => {
               </form>
             </CardContent>
           </Card>
-        </div>
-      </div>
-
-      {/* Right side - Image */}
-      <div className="hidden lg:flex flex-1 relative">
-        <img
-          src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
-          alt="Professional workspace"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 to-indigo-900/20"></div>
-        <div className="absolute bottom-8 left-8 text-white">
-          <h2 className="text-2xl font-bold mb-2">Administrative Excellence</h2>
-          <p className="text-purple-100 max-w-md">Manage your career services platform with powerful admin tools and comprehensive oversight.</p>
         </div>
       </div>
     </div>
