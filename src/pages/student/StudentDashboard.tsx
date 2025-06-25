@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -114,262 +113,274 @@ const StudentDashboard = () => {
       case 'job-search':
         return (
           <div className="space-y-6">
-            {/* Fixed-width Search Bar */}
-            <div className="w-full max-w-2xl">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex-1">
-                      <Label htmlFor="search" className="sr-only">Search jobs</Label>
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                        <Input
-                          id="search"
-                          placeholder="Search jobs by title, company, or description..."
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                          className="pl-10"
-                        />
+            {/* Fixed Search Bar Container */}
+            <div className="sticky top-0 z-10 bg-white pb-4">
+              <div className="w-full max-w-2xl">
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex-1">
+                        <Label htmlFor="search" className="sr-only">Search jobs</Label>
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                          <Input
+                            id="search"
+                            placeholder="Search jobs by title, company, or description..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-10 w-96"
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Job Listings */}
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">Available Opportunities</h2>
-              <Badge variant="secondary">
-                {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Found
-              </Badge>
-            </div>
-
-            {filteredJobs.length === 0 ? (
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
-                  <p className="text-gray-600">
-                    {searchTerm ? 'Try adjusting your search terms' : 'New opportunities will appear here when posted'}
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid gap-6">
-                {filteredJobs.map((job) => (
-                  <Card key={job.id} className="hover:shadow-lg transition-shadow">
-                    <CardContent className="p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex-1">
-                          <h3 className="text-xl font-semibold text-gray-900 mb-2">{job.title}</h3>
-                          <p className="text-lg text-gray-700 mb-2">{job.company}</p>
-                          <p className="text-gray-600 line-clamp-3">{job.description}</p>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div className="flex items-center text-gray-600">
-                          <DollarSign className="h-4 w-4 mr-2" />
-                          <span>{job.salary}</span>
-                        </div>
-                        <div className="flex items-center text-gray-600">
-                          <MapPin className="h-4 w-4 mr-2" />
-                          <span>{job.location}</span>
-                        </div>
-                        <div className="flex items-center text-gray-600">
-                          <Calendar className="h-4 w-4 mr-2" />
-                          <span>Due: {formatDate(job.deadline)}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex justify-between items-center">
-                        <div className="text-sm text-gray-600">
-                          <Clock className="h-4 w-4 inline mr-1" />
-                          Posted {formatDate(job.created_at)}
-                        </div>
-                        
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button 
-                              onClick={() => setSelectedJob(job)}
-                              className="bg-blue-600 hover:bg-blue-700"
-                            >
-                              View & Apply
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                            <DialogHeader>
-                              <DialogTitle className="text-xl">{selectedJob?.title}</DialogTitle>
-                              <DialogDescription className="text-lg">
-                                {selectedJob?.company} • {selectedJob?.location}
-                              </DialogDescription>
-                            </DialogHeader>
-                            
-                            {selectedJob && (
-                              <div className="space-y-6">
-                                <div>
-                                  <h4 className="font-semibold mb-2">Job Description</h4>
-                                  <p className="text-gray-700">{selectedJob.description}</p>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                    <h4 className="font-semibold mb-2">Compensation</h4>
-                                    <p className="text-gray-700">{selectedJob.salary}</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="font-semibold mb-2">Job Type</h4>
-                                    <p className="text-gray-700 capitalize">{selectedJob.type}</p>
-                                  </div>
-                                </div>
-
-                                <div>
-                                  <h4 className="font-semibold mb-2">Application Deadline</h4>
-                                  <p className="text-gray-700">{formatDate(selectedJob.deadline)}</p>
-                                </div>
-
-                                <div className="border-t pt-6">
-                                  <h4 className="font-semibold mb-2">Apply for this position</h4>
-                                  <div className="space-y-4">
-                                    <div>
-                                      <Label htmlFor="message">Cover Message (Optional)</Label>
-                                      <Textarea
-                                        id="message"
-                                        placeholder="Tell the employer why you're interested in this position..."
-                                        value={applicationMessage}
-                                        onChange={(e) => setApplicationMessage(e.target.value)}
-                                        rows={4}
-                                      />
-                                    </div>
-                                    
-                                    <div className="bg-yellow-50 p-4 rounded-lg">
-                                      <div className="flex items-center space-x-2 text-yellow-800">
-                                        <FileText className="h-4 w-4" />
-                                        <p className="text-sm">
-                                          Resume upload feature coming soon. For now, mention your key qualifications in the message above.
-                                        </p>
-                                      </div>
-                                    </div>
-
-                                    <Button 
-                                      onClick={handleApply}
-                                      disabled={isApplying}
-                                      className="w-full bg-blue-600 hover:bg-blue-700"
-                                    >
-                                      {isApplying ? 'Submitting Application...' : 'Submit Application'}
-                                    </Button>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                          </DialogContent>
-                        </Dialog>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                  </CardContent>
+                </Card>
               </div>
-            )}
+            </div>
+
+            {/* Dynamic Job Listings Below */}
+            <div className="pt-4">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Available Opportunities</h2>
+                <Badge variant="secondary">
+                  {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Found
+                </Badge>
+              </div>
+
+              {filteredJobs.length === 0 ? (
+                <Card>
+                  <CardContent className="p-12 text-center">
+                    <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
+                    <p className="text-gray-600">
+                      {searchTerm ? 'Try adjusting your search terms' : 'New opportunities will appear here when posted'}
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid gap-6">
+                  {filteredJobs.map((job) => (
+                    <Card key={job.id} className="hover:shadow-lg transition-shadow">
+                      <CardContent className="p-6">
+                        <div className="flex justify-between items-start mb-4">
+                          <div className="flex-1">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-2">{job.title}</h3>
+                            <p className="text-lg text-gray-700 mb-2">{job.company}</p>
+                            <p className="text-gray-600 line-clamp-3">{job.description}</p>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                          <div className="flex items-center text-gray-600">
+                            <DollarSign className="h-4 w-4 mr-2" />
+                            <span>{job.salary}</span>
+                          </div>
+                          <div className="flex items-center text-gray-600">
+                            <MapPin className="h-4 w-4 mr-2" />
+                            <span>{job.location}</span>
+                          </div>
+                          <div className="flex items-center text-gray-600">
+                            <Calendar className="h-4 w-4 mr-2" />
+                            <span>Due: {formatDate(job.deadline)}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-between items-center">
+                          <div className="text-sm text-gray-600">
+                            <Clock className="h-4 w-4 inline mr-1" />
+                            Posted {formatDate(job.created_at)}
+                          </div>
+                          
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button 
+                                onClick={() => setSelectedJob(job)}
+                                className="bg-blue-600 hover:bg-blue-700"
+                              >
+                                View & Apply
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                              <DialogHeader>
+                                <DialogTitle className="text-xl">{selectedJob?.title}</DialogTitle>
+                                <DialogDescription className="text-lg">
+                                  {selectedJob?.company} • {selectedJob?.location}
+                                </DialogDescription>
+                              </DialogHeader>
+                              
+                              {selectedJob && (
+                                <div className="space-y-6">
+                                  <div>
+                                    <h4 className="font-semibold mb-2">Job Description</h4>
+                                    <p className="text-gray-700">{selectedJob.description}</p>
+                                  </div>
+
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <h4 className="font-semibold mb-2">Compensation</h4>
+                                      <p className="text-gray-700">{selectedJob.salary}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="font-semibold mb-2">Job Type</h4>
+                                      <p className="text-gray-700 capitalize">{selectedJob.type}</p>
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <h4 className="font-semibold mb-2">Application Deadline</h4>
+                                    <p className="text-gray-700">{formatDate(selectedJob.deadline)}</p>
+                                  </div>
+
+                                  <div className="border-t pt-6">
+                                    <h4 className="font-semibold mb-2">Apply for this position</h4>
+                                    <div className="space-y-4">
+                                      <div>
+                                        <Label htmlFor="message">Cover Message (Optional)</Label>
+                                        <Textarea
+                                          id="message"
+                                          placeholder="Tell the employer why you're interested in this position..."
+                                          value={applicationMessage}
+                                          onChange={(e) => setApplicationMessage(e.target.value)}
+                                          rows={4}
+                                        />
+                                      </div>
+                                      
+                                      <div className="bg-yellow-50 p-4 rounded-lg">
+                                        <div className="flex items-center space-x-2 text-yellow-800">
+                                          <FileText className="h-4 w-4" />
+                                          <p className="text-sm">
+                                            Resume upload feature coming soon. For now, mention your key qualifications in the message above.
+                                          </p>
+                                        </div>
+                                      </div>
+
+                                      <Button 
+                                        onClick={handleApply}
+                                        disabled={isApplying}
+                                        className="w-full bg-blue-600 hover:bg-blue-700"
+                                      >
+                                        {isApplying ? 'Submitting Application...' : 'Submit Application'}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </DialogContent>
+                          </Dialog>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         );
 
       case 'my-applications':
         return (
           <div className="space-y-6">
-            {/* Header with title left and filter right */}
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">My Applications</h2>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="flex items-center space-x-2">
-                    <Filter className="h-4 w-4" />
-                    <span>Filter Status</span>
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-48 bg-white border shadow-lg z-50">
-                  <DropdownMenuCheckboxItem
-                    checked={statusFilters.accepted}
-                    onCheckedChange={() => toggleStatusFilter('accepted')}
-                  >
-                    Accepted
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={statusFilters.rejected}
-                    onCheckedChange={() => toggleStatusFilter('rejected')}
-                  >
-                    Rejected
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={statusFilters.reviewed}
-                    onCheckedChange={() => toggleStatusFilter('reviewed')}
-                  >
-                    Reviewed
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={statusFilters.pending}
-                    onCheckedChange={() => toggleStatusFilter('pending')}
-                  >
-                    Pending
-                  </DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+            {/* Fixed Header Container */}
+            <div className="sticky top-0 z-10 bg-white pb-4">
+              <div className="flex items-center justify-between w-full">
+                <div className="flex-shrink-0">
+                  <h2 className="text-2xl font-bold text-gray-900">My Applications</h2>
+                </div>
+                
+                <div className="flex-shrink-0">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="flex items-center space-x-2">
+                        <Filter className="h-4 w-4" />
+                        <span>Filter Status</span>
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-48 bg-white border shadow-lg z-50">
+                      <DropdownMenuCheckboxItem
+                        checked={statusFilters.accepted}
+                        onCheckedChange={() => toggleStatusFilter('accepted')}
+                      >
+                        Accepted
+                      </DropdownMenuCheckboxItem>
+                      <DropdownMenuCheckboxItem
+                        checked={statusFilters.rejected}
+                        onCheckedChange={() => toggleStatusFilter('rejected')}
+                      >
+                        Rejected
+                      </DropdownMenuCheckboxItem>
+                      <DropdownMenuCheckboxItem
+                        checked={statusFilters.reviewed}
+                        onCheckedChange={() => toggleStatusFilter('reviewed')}
+                      >
+                        Reviewed
+                      </DropdownMenuCheckboxItem>
+                      <DropdownMenuCheckboxItem
+                        checked={statusFilters.pending}
+                        onCheckedChange={() => toggleStatusFilter('pending')}
+                      >
+                        Pending
+                      </DropdownMenuCheckboxItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
             </div>
             
-            {/* 3-column grid layout for applications */}
-            {filteredApplications.length === 0 ? (
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <Send className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    {studentApplications.length === 0 ? 'No applications yet' : 'No applications match your filters'}
-                  </h3>
-                  <p className="text-gray-600">
-                    {studentApplications.length === 0 
-                      ? 'Applications you submit will appear here'
-                      : 'Try adjusting your status filters to see more applications'
-                    }
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredApplications.map((application) => (
-                  <Card key={application.id} className="h-fit">
-                    <CardContent className="p-6">
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                              {getJobTitle(application.job_id)}
-                            </h3>
-                            <p className="text-md text-gray-700 mb-2">
-                              {getJobCompany(application.job_id)}
-                            </p>
+            {/* Dynamic Applications Grid Below */}
+            <div className="pt-4">
+              {filteredApplications.length === 0 ? (
+                <Card>
+                  <CardContent className="p-12 text-center">
+                    <Send className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      {studentApplications.length === 0 ? 'No applications yet' : 'No applications match your filters'}
+                    </h3>
+                    <p className="text-gray-600">
+                      {studentApplications.length === 0 
+                        ? 'Applications you submit will appear here'
+                        : 'Try adjusting your status filters to see more applications'
+                      }
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredApplications.map((application) => (
+                    <Card key={application.id} className="h-fit">
+                      <CardContent className="p-6">
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                                {getJobTitle(application.job_id)}
+                              </h3>
+                              <p className="text-md text-gray-700 mb-2">
+                                {getJobCompany(application.job_id)}
+                              </p>
+                            </div>
+                            <Badge variant={getStatusBadgeVariant(application.status)} className="ml-2">
+                              {application.status}
+                            </Badge>
                           </div>
-                          <Badge variant={getStatusBadgeVariant(application.status)} className="ml-2">
-                            {application.status}
-                          </Badge>
+                          
+                          <p className="text-sm text-gray-600">
+                            Applied on {formatDate(application.applied_at)}
+                          </p>
+                          
+                          {application.cover_letter && (
+                            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                              <h4 className="font-medium mb-2 text-sm">Cover Letter</h4>
+                              <p className="text-xs text-gray-700 line-clamp-3">{application.cover_letter}</p>
+                            </div>
+                          )}
                         </div>
-                        
-                        <p className="text-sm text-gray-600">
-                          Applied on {formatDate(application.applied_at)}
-                        </p>
-                        
-                        {application.cover_letter && (
-                          <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                            <h4 className="font-medium mb-2 text-sm">Cover Letter</h4>
-                            <p className="text-xs text-gray-700 line-clamp-3">{application.cover_letter}</p>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         );
 
