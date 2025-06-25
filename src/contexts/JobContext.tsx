@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
@@ -36,6 +35,7 @@ interface JobContextType {
   applyToJob: (jobId: string, coverLetter: string) => Promise<boolean>;
   getJobsByEmployer: (employerId: string) => JobPosting[];
   getApprovedJobs: () => JobPosting[];
+  getStudentApplications: () => JobApplication[];
   refreshJobs: () => Promise<void>;
   isLoading: boolean;
 }
@@ -168,6 +168,24 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (!user) return false;
 
     try {
+      // Check if application already exists
+      const { data: existingApplication, error: checkError } = await supabase
+        .from('applications')
+        .select('id')
+        .eq('job_id', jobId)
+        .eq('student_id', user.id)
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        console.error('Error checking existing application:', checkError);
+        return false;
+      }
+
+      if (existingApplication) {
+        console.log('Application already exists for this job');
+        return false;
+      }
+
       const { error } = await supabase.from('applications').insert([
         {
           job_id: jobId,
@@ -197,6 +215,10 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return jobs.filter(job => job.status === 'approved');
   };
 
+  const getStudentApplications = () => {
+    return applications;
+  };
+
   const value = {
     jobs,
     applications,
@@ -205,6 +227,7 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     applyToJob,
     getJobsByEmployer,
     getApprovedJobs,
+    getStudentApplications,
     refreshJobs,
     isLoading,
   };

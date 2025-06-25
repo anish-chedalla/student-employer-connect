@@ -16,7 +16,7 @@ import StudentSidebar from '../../components/StudentSidebar';
 
 const StudentDashboard = () => {
   const { user, profile } = useAuth();
-  const { getApprovedJobs, applyToJob } = useJobs();
+  const { getApprovedJobs, getStudentApplications, applyToJob } = useJobs();
   const { toast } = useToast();
   
   const [searchTerm, setSearchTerm] = useState('');
@@ -26,6 +26,7 @@ const StudentDashboard = () => {
   const [activeSection, setActiveSection] = useState('job-search');
 
   const approvedJobs = getApprovedJobs();
+  const studentApplications = getStudentApplications();
   
   const filteredJobs = approvedJobs.filter(job =>
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -49,8 +50,8 @@ const StudentDashboard = () => {
       setSelectedJob(null);
     } else {
       toast({
-        title: "Application Failed",
-        description: "There was an error submitting your application. Please try again.",
+        title: "Application Failed", 
+        description: "You may have already applied to this job or there was an error.",
         variant: "destructive"
       });
     }
@@ -64,6 +65,16 @@ const StudentDashboard = () => {
       month: 'long',
       day: 'numeric'
     });
+  };
+
+  const getJobTitle = (jobId: string) => {
+    const job = approvedJobs.find(job => job.id === jobId);
+    return job ? job.title : 'Unknown Job';
+  };
+
+  const getJobCompany = (jobId: string) => {
+    const job = approvedJobs.find(job => job.id === jobId);
+    return job ? job.company : 'Unknown Company';
   };
 
   const renderContent = () => {
@@ -233,15 +244,55 @@ const StudentDashboard = () => {
         return (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900">My Applications</h2>
-            <Card>
-              <CardContent className="p-12 text-center">
-                <Send className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No applications yet</h3>
-                <p className="text-gray-600">
-                  Applications you submit will appear here
-                </p>
-              </CardContent>
-            </Card>
+            
+            {studentApplications.length === 0 ? (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <Send className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No applications yet</h3>
+                  <p className="text-gray-600">
+                    Applications you submit will appear here
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-6">
+                {studentApplications.map((application) => (
+                  <Card key={application.id}>
+                    <CardContent className="p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                            {getJobTitle(application.job_id)}
+                          </h3>
+                          <p className="text-lg text-gray-700 mb-2">
+                            {getJobCompany(application.job_id)}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            Applied on {formatDate(application.applied_at)}
+                          </p>
+                        </div>
+                        <Badge variant={
+                          application.status === 'accepted' ? 'default' : 
+                          application.status === 'rejected' ? 'destructive' : 
+                          application.status === 'reviewed' ? 'secondary' : 
+                          'outline'
+                        }>
+                          {application.status}
+                        </Badge>
+                      </div>
+                      
+                      {application.cover_letter && (
+                        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                          <h4 className="font-medium mb-2">Cover Letter</h4>
+                          <p className="text-sm text-gray-700">{application.cover_letter}</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         );
 
@@ -249,15 +300,54 @@ const StudentDashboard = () => {
         return (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900">Application Status</h2>
-            <Card>
-              <CardContent className="p-12 text-center">
-                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Track your progress</h3>
-                <p className="text-gray-600">
-                  Status updates for your applications will appear here
-                </p>
-              </CardContent>
-            </Card>
+            
+            {studentApplications.length === 0 ? (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Track your progress</h3>
+                  <p className="text-gray-600">
+                    Status updates for your applications will appear here
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-4">
+                {studentApplications.map((application) => (
+                  <Card key={application.id}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <div className={`w-3 h-3 rounded-full ${
+                            application.status === 'accepted' ? 'bg-green-500' :
+                            application.status === 'rejected' ? 'bg-red-500' :
+                            application.status === 'reviewed' ? 'bg-yellow-500' :
+                            'bg-gray-400'
+                          }`} />
+                          <div>
+                            <p className="font-medium">{getJobTitle(application.job_id)}</p>
+                            <p className="text-sm text-gray-600">{getJobCompany(application.job_id)}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <Badge variant={
+                            application.status === 'accepted' ? 'default' : 
+                            application.status === 'rejected' ? 'destructive' : 
+                            application.status === 'reviewed' ? 'secondary' : 
+                            'outline'
+                          }>
+                            {application.status}
+                          </Badge>
+                          <p className="text-sm text-gray-600 mt-1">
+                            {formatDate(application.applied_at)}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         );
 
@@ -291,10 +381,10 @@ const StudentDashboard = () => {
           </header>
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <Card>
-                <CardContent className="p-6">
+            {/* Stats Cards - Updated to match search box width */}
+            <Card className="mb-8">
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600">Available Jobs</p>
@@ -302,23 +392,15 @@ const StudentDashboard = () => {
                     </div>
                     <Building2 className="h-8 w-8 text-blue-600" />
                   </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-6">
+                  
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600">Applications Sent</p>
-                      <p className="text-2xl font-bold text-gray-900">0</p>
+                      <p className="text-2xl font-bold text-gray-900">{studentApplications.length}</p>
                     </div>
                     <Send className="h-8 w-8 text-green-600" />
                   </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-6">
+                  
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600">Profile Views</p>
@@ -326,9 +408,9 @@ const StudentDashboard = () => {
                     </div>
                     <Users className="h-8 w-8 text-purple-600" />
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Main Content */}
             {renderContent()}
