@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +19,7 @@ const EmployerDashboard = () => {
   const [showNewJobDialog, setShowNewJobDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // New job form state
+  // New job form state - updated to match JobPosting interface
   const [newJob, setNewJob] = useState({
     title: '',
     description: '',
@@ -37,7 +36,7 @@ const EmployerDashboard = () => {
     if (!user) return;
     
     // Basic validation
-    if (!newJob.title || !newJob.description || !newJob.company || !newJob.salary || !newJob.deadline) {
+    if (!newJob.title || !newJob.description || !newJob.company || !newJob.salary || !newJob.deadline || !newJob.location) {
       toast({
         title: "Validation Error",
         description: "Please fill in all required fields.",
@@ -48,32 +47,42 @@ const EmployerDashboard = () => {
 
     setIsSubmitting(true);
     
-    const success = await submitJob(newJob);
-    
-    if (success) {
-      toast({
-        title: "Job Posted",
-        description: "Your job posting has been submitted for review."
-      });
-      setNewJob({
-        title: '',
-        description: '',
-        company: '',
-        salary: '',
-        type: 'full-time',
-        deadline: '',
-        location: ''
-      });
-      setShowNewJobDialog(false);
-    } else {
+    try {
+      console.log('Submitting job:', newJob);
+      const success = await submitJob(newJob);
+      
+      if (success) {
+        toast({
+          title: "Job Posted",
+          description: "Your job posting has been submitted for review."
+        });
+        setNewJob({
+          title: '',
+          description: '',
+          company: '',
+          salary: '',
+          type: 'full-time',
+          deadline: '',
+          location: ''
+        });
+        setShowNewJobDialog(false);
+      } else {
+        toast({
+          title: "Submission Failed",
+          description: "There was an error submitting your job posting. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Error submitting job:', error);
       toast({
         title: "Submission Failed",
         description: "There was an error submitting your job posting. Please try again.",
         variant: "destructive"
       });
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    setIsSubmitting(false);
   };
 
   const formatDate = (dateString: string) => {
