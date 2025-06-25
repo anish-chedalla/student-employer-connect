@@ -63,7 +63,7 @@ const EmployerLogin = () => {
             backgroundImage: `url('https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')`
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-green-900/80 via-green-800/70 to-emerald-900/80"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-green-900/60 via-green-800/50 to-emerald-900/60"></div>
         </div>
 
         {/* Home Button */}
@@ -125,7 +125,7 @@ const EmployerLogin = () => {
           backgroundImage: `url('https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')`
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-green-900/80 via-green-800/70 to-emerald-900/80"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-green-900/60 via-green-800/50 to-emerald-900/60"></div>
       </div>
 
       {/* Home Button */}
