@@ -54,17 +54,17 @@ const Index = () => {
             </Link>
           </div>
 
-          {/* Stats */}
+          {/* Stats with Hover Effects */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center group cursor-pointer">
+            <div className="text-center group cursor-pointer p-6 rounded-2xl transition-all duration-300 hover:bg-white/10 hover:backdrop-blur-sm hover:scale-105">
               <div className="text-4xl md:text-5xl font-bold mb-2 text-blue-400 group-hover:text-blue-300 transition-colors duration-300">500+</div>
               <div className="text-lg text-gray-300 group-hover:text-white transition-colors duration-300">Active Students</div>
             </div>
-            <div className="text-center group cursor-pointer">
+            <div className="text-center group cursor-pointer p-6 rounded-2xl transition-all duration-300 hover:bg-white/10 hover:backdrop-blur-sm hover:scale-105">
               <div className="text-4xl md:text-5xl font-bold mb-2 text-green-400 group-hover:text-green-300 transition-colors duration-300">150+</div>
               <div className="text-lg text-gray-300 group-hover:text-white transition-colors duration-300">Partner Employers</div>
             </div>
-            <div className="text-center group cursor-pointer">
+            <div className="text-center group cursor-pointer p-6 rounded-2xl transition-all duration-300 hover:bg-white/10 hover:backdrop-blur-sm hover:scale-105">
               <div className="text-4xl md:text-5xl font-bold mb-2 text-purple-400 group-hover:text-purple-300 transition-colors duration-300">200+</div>
               <div className="text-lg text-gray-300 group-hover:text-white transition-colors duration-300">Successful Placements</div>
             </div>
@@ -87,15 +87,20 @@ const Index = () => {
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">Simple steps to connect students with meaningful career opportunities</p>
           </div>
 
-          <div className="grid gap-12 lg:grid-cols-2 items-center mb-20">
+          <div className="grid gap-16 lg:grid-cols-2 items-center mb-20">
             {/* For Students */}
             <div className="space-y-8">
+              <div className="mb-8">
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">For Students</h3>
+                <p className="text-lg text-gray-600">Discover opportunities and launch your career journey</p>
+              </div>
+              
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                   <GraduationCap className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Create Your Profile</h3>
+                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Create Your Profile</h4>
                   <p className="text-gray-600">Set up your student profile with your skills, interests, and career goals.</p>
                 </div>
               </div>
@@ -105,7 +110,7 @@ const Index = () => {
                   <Briefcase className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Browse Opportunities</h3>
+                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Browse Opportunities</h4>
                   <p className="text-gray-600">Explore verified job postings from local employers in your area of interest.</p>
                 </div>
               </div>
@@ -115,52 +120,57 @@ const Index = () => {
                   <CheckCircle className="h-6 w-6 text-purple-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Apply & Get Hired</h3>
+                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Apply & Get Hired</h4>
                   <p className="text-gray-600">Submit applications and track your progress through our streamlined process.</p>
                 </div>
               </div>
             </div>
 
-            {/* Image Placeholder */}
+            {/* Image with Student Badge */}
             <div className="relative">
               <img
                 src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&h=400&fit=crop"
                 alt="Student using laptop"
                 className="rounded-2xl shadow-2xl w-full"
               />
-              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center shadow-lg">
                 <div className="text-white text-center">
-                  <div className="text-2xl font-bold">24/7</div>
-                  <div className="text-sm">Support</div>
+                  <div className="text-2xl font-bold">Free</div>
+                  <div className="text-sm">For Students</div>
                 </div>
               </div>
             </div>
           </div>
 
           {/* For Employers */}
-          <div className="grid gap-12 lg:grid-cols-2 items-center">
-            {/* Image Placeholder */}
+          <div className="grid gap-16 lg:grid-cols-2 items-center">
+            {/* Image with Employer Badge */}
             <div className="relative order-2 lg:order-1">
               <img
                 src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=600&h=400&fit=crop"
                 alt="Professional workspace"
                 className="rounded-2xl shadow-2xl w-full"
               />
-              <div className="absolute -top-6 -left-6 w-32 h-32 bg-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="absolute -top-6 -left-6 w-32 h-32 bg-gradient-to-br from-green-600 to-green-700 rounded-2xl flex items-center justify-center shadow-lg">
                 <div className="text-white text-center">
-                  <div className="text-2xl font-bold">Fast</div>
-                  <div className="text-sm">Approval</div>
+                  <div className="text-2xl font-bold">Verified</div>
+                  <div className="text-sm">For Employers</div>
                 </div>
               </div>
             </div>
 
             <div className="space-y-8 order-1 lg:order-2">
+              <div className="mb-8">
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">For Employers</h3>
+                <p className="text-lg text-gray-600">Find talented students for your business needs</p>
+              </div>
+              
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                   <Building2 className="h-6 w-6 text-orange-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Post Your Jobs</h3>
+                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Post Your Jobs</h4>
                   <p className="text-gray-600">Create detailed job postings with requirements and company information.</p>
                 </div>
               </div>
@@ -170,7 +180,7 @@ const Index = () => {
                   <Shield className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Get Verified</h3>
+                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Get Verified</h4>
                   <p className="text-gray-600">Our admin team reviews and approves postings for quality assurance.</p>
                 </div>
               </div>
@@ -180,7 +190,7 @@ const Index = () => {
                   <Users className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Connect with Talent</h3>
+                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Connect with Talent</h4>
                   <p className="text-gray-600">Review applications and connect with pre-screened student candidates.</p>
                 </div>
               </div>
@@ -189,122 +199,132 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Portal Access Section */}
-      <section id="job-postings" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Choose Your Portal</h2>
-            <p className="text-xl text-gray-600">Access the platform that's right for you</p>
-          </div>
-          
-          <div className="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">
-            {/* Student Portal */}
-            <Card className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-blue-50 to-white hover:from-blue-100 hover:to-blue-50 cursor-pointer">
-              <CardHeader className="text-center pb-4">
-                <div className="mx-auto h-16 w-16 bg-blue-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-blue-600 transition-all duration-300">
-                  <GraduationCap className="h-8 w-8 text-white" />
-                </div>
-                <CardTitle className="text-2xl group-hover:text-blue-700 transition-colors duration-300">Student Portal</CardTitle>
-                <CardDescription className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
-                  Discover opportunities and launch your career
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="text-center space-y-6">
-                <div className="space-y-3 text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-blue-500" />
-                    <span>Browse verified job postings</span>
+      {/* Expandable Sections Container */}
+      <div className="expandable-sections">
+        {/* Portal Access Section */}
+        <section id="job-postings" className="expandable-section bg-white py-20 transition-all duration-500 hover:py-32 hover:shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4 transition-all duration-300 hover:text-5xl">Choose Your Portal</h2>
+              <p className="text-xl text-gray-600">Access the platform that's right for you</p>
+            </div>
+            
+            <div className="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">
+              {/* Student Portal */}
+              <Card className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-blue-50 to-white hover:from-blue-100 hover:to-blue-50 cursor-pointer">
+                <CardHeader className="text-center pb-4">
+                  <div className="mx-auto h-16 w-16 bg-blue-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-blue-600 transition-all duration-300">
+                    <GraduationCap className="h-8 w-8 text-white" />
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-blue-500" />
-                    <span>Apply with resume upload</span>
+                  <CardTitle className="text-2xl group-hover:text-blue-700 transition-colors duration-300">Student Portal</CardTitle>
+                  <CardDescription className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
+                    Discover opportunities and launch your career
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center space-y-6">
+                  <div className="space-y-3 text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="h-4 w-4 text-blue-500" />
+                      <span>Browse verified job postings</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="h-4 w-4 text-blue-500" />
+                      <span>Apply with resume upload</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="h-4 w-4 text-blue-500" />
+                      <span>Track application status</span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-blue-500" />
-                    <span>Track application status</span>
-                  </div>
-                </div>
-                <Link to="/student/login" className="block">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 group-hover:shadow-lg transition-all duration-300 py-3">
-                    Access Student Portal
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
+                  <Link to="/student/login" className="block">
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 group-hover:shadow-lg transition-all duration-300 py-3">
+                      Access Student Portal
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
 
-            {/* Employer Portal */}
-            <Card className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-green-50 to-white hover:from-green-100 hover:to-green-50 cursor-pointer">
-              <CardHeader className="text-center pb-4">
-                <div className="mx-auto h-16 w-16 bg-green-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-green-600 transition-all duration-300">
-                  <Building2 className="h-8 w-8 text-white" />
-                </div>
-                <CardTitle className="text-2xl group-hover:text-green-700 transition-colors duration-300">Employer Portal</CardTitle>
-                <CardDescription className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
-                  Find talented students for your business
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="text-center space-y-6">
-                <div className="space-y-3 text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Post job opportunities</span>
+              {/* Employer Portal */}
+              <Card className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-green-50 to-white hover:from-green-100 hover:to-green-50 cursor-pointer">
+                <CardHeader className="text-center pb-4">
+                  <div className="mx-auto h-16 w-16 bg-green-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-green-600 transition-all duration-300">
+                    <Building2 className="h-8 w-8 text-white" />
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Access student talent pool</span>
+                  <CardTitle className="text-2xl group-hover:text-green-700 transition-colors duration-300">Employer Portal</CardTitle>
+                  <CardDescription className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
+                    Find talented students for your business
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center space-y-6">
+                  <div className="space-y-3 text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span>Post job opportunities</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span>Access student talent pool</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span>Manage applications</span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Manage applications</span>
-                  </div>
-                </div>
-                <Link to="/employer/login" className="block">
-                  <Button className="w-full bg-green-600 hover:bg-green-700 group-hover:shadow-lg transition-all duration-300 py-3">
-                    Access Employer Portal
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
+                  <Link to="/employer/login" className="block">
+                    <Button className="w-full bg-green-600 hover:bg-green-700 group-hover:shadow-lg transition-all duration-300 py-3">
+                      Access Employer Portal
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
 
-            {/* Admin Portal */}
-            <Card className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-purple-50 to-white hover:from-purple-100 hover:to-purple-50 cursor-pointer">
-              <CardHeader className="text-center pb-4">
-                <div className="mx-auto h-16 w-16 bg-purple-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-purple-600 transition-all duration-300">
-                  <Shield className="h-8 w-8 text-white" />
-                </div>
-                <CardTitle className="text-2xl group-hover:text-purple-700 transition-colors duration-300">Admin Portal</CardTitle>
-                <CardDescription className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
-                  Manage and oversee the platform
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="text-center space-y-6">
-                <div className="space-y-3 text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-purple-500" />
-                    <span>Review job postings</span>
+              {/* Admin Portal */}
+              <Card className="group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-purple-50 to-white hover:from-purple-100 hover:to-purple-50 cursor-pointer">
+                <CardHeader className="text-center pb-4">
+                  <div className="mx-auto h-16 w-16 bg-purple-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-purple-600 transition-all duration-300">
+                    <Shield className="h-8 w-8 text-white" />
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-purple-500" />
-                    <span>Platform analytics</span>
+                  <CardTitle className="text-2xl group-hover:text-purple-700 transition-colors duration-300">Admin Portal</CardTitle>
+                  <CardDescription className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
+                    Manage and oversee the platform
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center space-y-6">
+                  <div className="space-y-3 text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="h-4 w-4 text-purple-500" />
+                      <span>Review job postings</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="h-4 w-4 text-purple-500" />
+                      <span>Platform analytics</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="h-4 w-4 text-purple-500" />
+                      <span>User management</span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-purple-500" />
-                    <span>User management</span>
-                  </div>
-                </div>
-                <Link to="/admin/login" className="block">
-                  <Button className="w-full bg-purple-600 hover:bg-purple-700 group-hover:shadow-lg transition-all duration-300 py-3">
-                    Access Admin Portal
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
+                  <Link to="/admin/login" className="block">
+                    <Button className="w-full bg-purple-600 hover:bg-purple-700 group-hover:shadow-lg transition-all duration-300 py-3">
+                      Access Admin Portal
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
           </div>
+        </section>
+
+        {/* Features Section */}
+        <div className="expandable-section bg-gray-50 transition-all duration-500 hover:bg-gray-100 hover:shadow-lg">
+          <FeatureHighlights />
         </div>
-      </section>
 
-      <FeatureHighlights />
-      <Testimonials />
+        {/* Testimonials Section */}
+        <div className="expandable-section bg-white transition-all duration-500 hover:bg-gray-50 hover:shadow-lg">
+          <Testimonials />
+        </div>
+      </div>
       
       {/* About Section */}
       <section id="about" className="py-20 bg-gray-900 text-white">
