@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -58,18 +59,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Function to handle redirects based on user role
   const handleRoleBasedRedirect = (userProfile: UserProfile) => {
+    // Only redirect if we're not already on the correct page
+    const currentPath = window.location.pathname;
+    
     switch (userProfile.role) {
       case 'admin':
-        window.location.href = '/admin/dashboard';
+        if (!currentPath.startsWith('/admin')) {
+          window.location.href = '/admin/dashboard';
+        }
         break;
       case 'employer':
-        window.location.href = '/employer/dashboard';
+        if (!currentPath.startsWith('/employer')) {
+          window.location.href = '/employer/dashboard';
+        }
         break;
       case 'student':
-        window.location.href = '/student/dashboard';
+        if (!currentPath.startsWith('/student')) {
+          window.location.href = '/student/dashboard';
+        }
         break;
       default:
-        window.location.href = '/';
+        if (currentPath !== '/') {
+          window.location.href = '/';
+        }
     }
   };
 
@@ -93,7 +105,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               setProfile(profileData);
               setIsLoading(false);
               
-              // Handle redirect after successful profile fetch
+              // Only redirect on actual sign-in events, not on page refresh
               if (event === 'SIGNED_IN' && profileData) {
                 setTimeout(() => {
                   handleRoleBasedRedirect(profileData);
