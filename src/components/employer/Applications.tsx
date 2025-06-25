@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -141,7 +140,10 @@ export const Applications = () => {
     try {
       const { error } = await supabase
         .from('applications')
-        .update({ status })
+        .update({ 
+          status,
+          employer_message: message 
+        })
         .eq('id', applicationId);
 
       if (error) {
