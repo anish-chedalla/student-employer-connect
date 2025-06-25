@@ -26,11 +26,6 @@ const StudentSidebar = ({ activeSection, onSectionChange }: StudentSidebarProps)
 
   const browseItems = [
     {
-      title: "All Jobs",
-      id: "browse-jobs",
-      icon: Search,
-    },
-    {
       title: "Job Search",
       id: "job-search",
       icon: Briefcase,

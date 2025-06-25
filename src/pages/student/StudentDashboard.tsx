@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +23,7 @@ const StudentDashboard = () => {
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [applicationMessage, setApplicationMessage] = useState('');
   const [isApplying, setIsApplying] = useState(false);
-  const [activeSection, setActiveSection] = useState('browse-jobs');
+  const [activeSection, setActiveSection] = useState('job-search');
 
   const approvedJobs = getApprovedJobs();
   
@@ -67,7 +68,6 @@ const StudentDashboard = () => {
 
   const renderContent = () => {
     switch (activeSection) {
-      case 'browse-jobs':
       case 'job-search':
         return (
           <div className="space-y-6">
@@ -100,19 +100,19 @@ const StudentDashboard = () => {
               </Badge>
             </div>
 
-            {filteredJobs.length === 0 ? (
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
-                  <p className="text-gray-600">
-                    {searchTerm ? 'Try adjusting your search terms' : 'New opportunities will appear here when posted'}
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid gap-6">
-                {filteredJobs.map((job) => (
+            <div className="grid gap-6">
+              {filteredJobs.length === 0 ? (
+                <Card className="min-h-[200px]">
+                  <CardContent className="p-12 text-center">
+                    <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
+                    <p className="text-gray-600">
+                      {searchTerm ? 'Try adjusting your search terms' : 'New opportunities will appear here when posted'}
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                filteredJobs.map((job) => (
                   <Card key={job.id} className="hover:shadow-lg transition-shadow">
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start mb-4">
@@ -121,9 +121,6 @@ const StudentDashboard = () => {
                           <p className="text-lg text-gray-700 mb-2">{job.company}</p>
                           <p className="text-gray-600 line-clamp-3">{job.description}</p>
                         </div>
-                        <Badge variant="outline" className="ml-4">
-                          {job.status}
-                        </Badge>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -226,9 +223,9 @@ const StudentDashboard = () => {
                       </div>
                     </CardContent>
                   </Card>
-                ))}
-              </div>
-            )}
+                ))
+              )}
+            </div>
           </div>
         );
 
