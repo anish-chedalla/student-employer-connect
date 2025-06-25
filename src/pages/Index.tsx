@@ -3,10 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { GraduationCap, Building2, Shield, Users, Briefcase, Clock } from "lucide-react";
-
 const Index = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+  return <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -79,9 +77,7 @@ const Index = () => {
                   <GraduationCap className="h-6 w-6 text-blue-600" />
                 </div>
                 <CardTitle className="text-xl">Student Portal</CardTitle>
-                <CardDescription>
-                  Browse job opportunities, submit applications, and track your career journey
-                </CardDescription>
+                <CardDescription>Browse job opportunities, submit applications, and track your career</CardDescription>
               </CardHeader>
               <CardContent className="text-center flex-1 flex flex-col justify-between">
                 <div className="text-sm text-gray-600 mb-6">
@@ -213,8 +209,6 @@ const Index = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
