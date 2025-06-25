@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,9 +18,17 @@ const EmployerLogin = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const { login, signUp } = useAuth();
+  const { login, signUp, user, profile } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Handle automatic redirect when user becomes authenticated
+  useEffect(() => {
+    if (user && profile && profile.role === 'employer' && !isLoading) {
+      console.log('User authenticated as employer, redirecting to dashboard');
+      navigate('/employer/dashboard');
+    }
+  }, [user, profile, navigate, isLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,12 +42,14 @@ const EmployerLogin = () => {
         if (result.error) {
           console.error('Signup error:', result.error);
           setError(result.error);
+          setIsLoading(false);
         } else {
           toast({
             title: "Account Created",
             description: "Please check your email to confirm your account."
           });
           setIsSignup(false);
+          setIsLoading(false);
         }
       } else {
         console.log('Attempting login for employer:', email);
@@ -47,15 +57,14 @@ const EmployerLogin = () => {
         if (result.error) {
           console.error('Login error:', result.error);
           setError(result.error);
-        } else {
-          console.log('Login successful, redirecting to dashboard');
-          navigate('/employer/dashboard');
+          setIsLoading(false);
         }
+        // Note: We don't set isLoading to false here on success
+        // because the useEffect will handle the redirect when auth state changes
       }
     } catch (error) {
       console.error('Unexpected error during authentication:', error);
       setError('An unexpected error occurred. Please try again.');
-    } finally {
       setIsLoading(false);
     }
   };
