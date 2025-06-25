@@ -19,6 +19,20 @@ const EmployerDashboard = () => {
 
   const employerJobs = getJobsByEmployer(user?.id || '');
 
+  // Get section titles
+  const getSectionTitle = (section: string) => {
+    switch (section) {
+      case 'post-jobs':
+        return 'Post New Job';
+      case 'my-postings':
+        return 'My Job Postings';
+      case 'applications':
+        return 'Applications';
+      default:
+        return 'Dashboard';
+    }
+  };
+
   // Fetch total applications for this employer
   useEffect(() => {
     const fetchApplicationCount = async () => {
@@ -76,6 +90,16 @@ const EmployerDashboard = () => {
         />
         <SidebarInset>
           <div className="p-6">
+            {/* Section Header */}
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-gray-900">{getSectionTitle(activeSection)}</h1>
+              <p className="text-gray-600 mt-2">
+                {activeSection === 'post-jobs' && 'Create and publish new job opportunities'}
+                {activeSection === 'my-postings' && 'Manage your published job postings'}
+                {activeSection === 'applications' && 'Review and manage job applications'}
+              </p>
+            </div>
+
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               <Card>

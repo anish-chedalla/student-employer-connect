@@ -2,10 +2,14 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, FileText, Mail } from 'lucide-react';
+import { Users, FileText, Mail, Check, X, MessageSquare } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface Application {
   id: string;
@@ -30,6 +34,10 @@ export const Applications = () => {
   const { getJobsByEmployer } = useJobs();
   const [applications, setApplications] = useState<Application[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
+  const [message, setMessage] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { toast } = useToast();
 
   const employerJobs = getJobsByEmployer(user?.id || '');
   const jobIds = employerJobs.map(job => job.id);
@@ -122,6 +130,53 @@ export const Applications = () => {
     fetchApplications();
   }, [jobIds.join(',')]);
 
+  const handleApplicationAction = async (applicationId: string, status: 'accepted' | 'rejected', message: string) => {
+    setIsProcessing(true);
+    try {
+      const { error } = await supabase
+        .from('applications')
+        .update({ status })
+        .eq('id', applicationId);
+
+      if (error) {
+        console.error('Error updating application:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update application status",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Update local state
+      setApplications(prev => 
+        prev.map(app => 
+          app.id === applicationId ? { ...app, status } : app
+        )
+      );
+
+      toast({
+        title: "Success",
+        description: `Application ${status} successfully`,
+      });
+
+      // TODO: Send email notification to student with message
+      console.log(`Sending ${status} notification to student with message: ${message}`);
+
+    } catch (error) {
+      console.error('Error processing application:', error);
+      toast({
+        title: "Error",
+        description: "Failed to process application",
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessing(false);
+      setSelectedApplication(null);
+      setMessage('');
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -156,14 +211,6 @@ export const Applications = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center space-x-3">
-        <Users className="h-8 w-8 text-green-600" />
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Applications</h1>
-          <p className="text-gray-600">Review applications for your job postings</p>
-        </div>
-      </div>
-
       {applications.length === 0 ? (
         <Card>
           <CardContent className="p-12 text-center">
@@ -188,7 +235,7 @@ export const Applications = () => {
                       <span>{application.student.email}</span>
                     </div>
                   </div>
-                  <div className="ml-4">
+                  <div className="ml-4 flex items-center space-x-2">
                     <Badge className={`${getStatusColor(application.status)} flex items-center space-x-1`}>
                       <span className="capitalize">{application.status}</span>
                     </Badge>
@@ -202,8 +249,108 @@ export const Applications = () => {
                   </div>
                 )}
 
-                <div className="text-sm text-gray-500">
-                  <span className="font-medium">Applied:</span> {formatDate(application.applied_at)}
+                <div className="flex justify-between items-center">
+                  <div className="text-sm text-gray-500">
+                    <span className="font-medium">Applied:</span> {formatDate(application.applied_at)}
+                  </div>
+                  
+                  {application.status === 'pending' && (
+                    <div className="flex space-x-2">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="text-green-600 border-green-600 hover:bg-green-50"
+                            onClick={() => setSelectedApplication(application)}
+                          >
+                            <Check className="h-4 w-4 mr-1" />
+                            Accept
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Accept Application</DialogTitle>
+                            <DialogDescription>
+                              You are about to accept {application.student.full_name}'s application for {application.job.title}.
+                              Write a message to the applicant:
+                            </DialogDescription>
+                          </DialogHeader>
+                          <Textarea
+                            placeholder="Congratulations! We're pleased to inform you that your application has been accepted..."
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            className="min-h-[100px]"
+                          />
+                          <DialogFooter>
+                            <Button 
+                              variant="outline" 
+                              onClick={() => {
+                                setSelectedApplication(null);
+                                setMessage('');
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                            <Button 
+                              onClick={() => handleApplicationAction(application.id, 'accepted', message)}
+                              disabled={isProcessing}
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              {isProcessing ? 'Processing...' : 'Accept Application'}
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="text-red-600 border-red-600 hover:bg-red-50"
+                            onClick={() => setSelectedApplication(application)}
+                          >
+                            <X className="h-4 w-4 mr-1" />
+                            Decline
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Decline Application</DialogTitle>
+                            <DialogDescription>
+                              You are about to decline {application.student.full_name}'s application for {application.job.title}.
+                              Write a message to the applicant:
+                            </DialogDescription>
+                          </DialogHeader>
+                          <Textarea
+                            placeholder="Thank you for your interest in this position. Unfortunately, we have decided to move forward with other candidates..."
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            className="min-h-[100px]"
+                          />
+                          <DialogFooter>
+                            <Button 
+                              variant="outline" 
+                              onClick={() => {
+                                setSelectedApplication(null);
+                                setMessage('');
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                            <Button 
+                              onClick={() => handleApplicationAction(application.id, 'rejected', message)}
+                              disabled={isProcessing}
+                              variant="destructive"
+                            >
+                              {isProcessing ? 'Processing...' : 'Decline Application'}
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
