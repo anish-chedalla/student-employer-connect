@@ -47,8 +47,9 @@ const StickyNavigation = () => {
         : 'bg-transparent'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-3">
+        <div className="flex items-center justify-between h-16 w-full">
+          {/* Logo - Far Left */}
+          <div className="flex items-center space-x-3 flex-shrink-0">
             <GraduationCap className={`h-6 w-6 transition-colors duration-300 ${
               isScrolled ? 'text-blue-600' : 'text-white'
             }`} />
@@ -59,7 +60,8 @@ const StickyNavigation = () => {
             </span>
           </div>
           
-          <div className="hidden md:flex items-center space-x-8">
+          {/* Navigation Items - Far Right */}
+          <div className="hidden md:flex items-center space-x-8 ml-auto">
             {navItems.map((item) => (
               item.href.startsWith('#') ? (
                 <a
