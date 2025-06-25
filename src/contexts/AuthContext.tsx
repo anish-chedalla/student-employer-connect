@@ -64,7 +64,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session check:', session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
       

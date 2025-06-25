@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,58 +16,33 @@ const EmployerLogin = () => {
   const [fullName, setFullName] = useState('');
   const [isSignup, setIsSignup] = useState(false);
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   
-  const { login, signUp, user, profile } = useAuth();
+  const { login, signUp, isLoading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-
-  // Handle automatic redirect when user becomes authenticated
-  useEffect(() => {
-    console.log('Auth state check:', { user: !!user, profile: profile?.role, isLoading });
-    if (user && profile && profile.role === 'employer') {
-      console.log('User authenticated as employer, redirecting to dashboard');
-      setIsLoading(false); // Ensure loading is stopped
-      navigate('/employer/dashboard');
-    }
-  }, [user, profile, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setIsLoading(true);
 
-    try {
-      if (isSignup) {
-        console.log('Attempting signup for employer:', email);
-        const result = await signUp(email, password, fullName, 'employer');
-        if (result.error) {
-          console.error('Signup error:', result.error);
-          setError(result.error);
-          setIsLoading(false);
-        } else {
-          toast({
-            title: "Account Created",
-            description: "Please check your email to confirm your account."
-          });
-          setIsSignup(false);
-          setIsLoading(false);
-        }
+    if (isSignup) {
+      const result = await signUp(email, password, fullName, 'employer');
+      if (result.error) {
+        setError(result.error);
       } else {
-        console.log('Attempting login for employer:', email);
-        const result = await login(email, password);
-        if (result.error) {
-          console.error('Login error:', result.error);
-          setError(result.error);
-          setIsLoading(false);
-        }
-        // Note: We don't set isLoading to false here on success
-        // because the useEffect will handle the redirect when auth state changes
+        toast({
+          title: "Account Created",
+          description: "Please check your email to confirm your account."
+        });
+        setIsSignup(false);
       }
-    } catch (error) {
-      console.error('Unexpected error during authentication:', error);
-      setError('An unexpected error occurred. Please try again.');
-      setIsLoading(false);
+    } else {
+      const result = await login(email, password);
+      if (result.error) {
+        setError(result.error);
+      } else {
+        navigate('/employer/dashboard');
+      }
     }
   };
 
@@ -110,7 +85,6 @@ const EmployerLogin = () => {
                     onChange={(e) => setFullName(e.target.value)}
                     required
                     placeholder="Enter your full name"
-                    disabled={isLoading}
                   />
                 </div>
               )}
@@ -124,7 +98,6 @@ const EmployerLogin = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="contact@company.com"
-                  disabled={isLoading}
                 />
               </div>
 
@@ -137,7 +110,6 @@ const EmployerLogin = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="Enter your password"
-                  disabled={isLoading}
                 />
               </div>
 
@@ -166,7 +138,6 @@ const EmployerLogin = () => {
                 type="button"
                 onClick={() => setIsSignup(!isSignup)}
                 className="text-green-600 hover:text-green-700 text-sm"
-                disabled={isLoading}
               >
                 {isSignup 
                   ? 'Already have an account? Sign in' 
