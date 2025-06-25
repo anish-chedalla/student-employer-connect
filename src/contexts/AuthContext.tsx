@@ -10,6 +10,7 @@ export interface UserProfile {
   role: 'student' | 'employer' | 'admin';
   created_at: string;
   updated_at: string;
+  verified?: boolean;
 }
 
 interface AuthContextType {
@@ -153,7 +154,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -161,6 +162,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (error) {
         setIsLoading(false);
         return { error: error.message };
+      }
+
+      // Check verification status for employers
+      if (data.user) {
+        const profileData = await fetchUserProfile(data.user.id);
+        if (profileData?.role === 'employer' && !profileData.verified) {
+          // Sign out the user immediately
+          await supabase.auth.signOut();
+          setIsLoading(false);
+          return { error: 'Your employer account is pending verification. Please wait for admin approval before logging in.' };
+        }
       }
 
       // Don't set loading to false here - let the auth state change handle it
