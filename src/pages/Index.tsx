@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -205,7 +204,7 @@ const Index = () => {
         <section id="job-postings" className="expandable-section bg-white py-20 transition-all duration-500 hover:py-32 hover:shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4 transition-all duration-300 hover:text-5xl">Choose Your Portal</h2>
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">Choose Your Portal</h2>
               <p className="text-xl text-gray-600">Access the platform that's right for you</p>
             </div>
             
