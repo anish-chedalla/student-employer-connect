@@ -4,24 +4,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { GraduationCap, Search, MapPin, Clock, DollarSign, Building2, FileText, Send, Calendar, Users, Filter, ChevronDown } from 'lucide-react';
 import StudentSidebar from '../../components/StudentSidebar';
+import { JobApplicationForm } from '../../components/student/JobApplicationForm';
 
 const StudentDashboard = () => {
   const { user, profile } = useAuth();
-  const { getApprovedJobs, getStudentApplications, applyToJob } = useJobs();
+  const { getApprovedJobs, getStudentApplications, refreshJobs } = useJobs();
   const { toast } = useToast();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedJob, setSelectedJob] = useState<any>(null);
-  const [applicationMessage, setApplicationMessage] = useState('');
   const [isApplying, setIsApplying] = useState(false);
   const [activeSection, setActiveSection] = useState('job-search');
   const [statusFilters, setStatusFilters] = useState({
@@ -49,29 +49,84 @@ const StudentDashboard = () => {
   // Filter applications based on selected status filters
   const filteredApplications = sortedApplications.filter(app => statusFilters[app.status]);
 
-  const handleApply = async () => {
+  const handleApply = async (applicationData: {
+    coverLetter: string;
+    applicantName: string;
+    applicantEmail: string;
+    additionalComments: string;
+    resumeUrl?: string;
+  }) => {
     if (!selectedJob || !user) return;
     
     setIsApplying(true);
     
-    const success = await applyToJob(selectedJob.id, applicationMessage);
-    
-    if (success) {
+    try {
+      // Check if application already exists
+      const { data: existingApplication, error: checkError } = await supabase
+        .from('applications')
+        .select('id')
+        .eq('job_id', selectedJob.id)
+        .eq('student_id', user.id)
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        console.error('Error checking existing application:', checkError);
+        toast({
+          title: "Application Failed",
+          description: "There was an error processing your application.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (existingApplication) {
+        toast({
+          title: "Already Applied",
+          description: "You have already applied to this job.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const { error } = await supabase.from('applications').insert([
+        {
+          job_id: selectedJob.id,
+          student_id: user.id,
+          cover_letter: applicationData.coverLetter,
+          applicant_name: applicationData.applicantName,
+          applicant_email: applicationData.applicantEmail,
+          additional_comments: applicationData.additionalComments,
+          resume_url: applicationData.resumeUrl,
+        },
+      ]);
+
+      if (error) {
+        console.error('Error applying to job:', error);
+        toast({
+          title: "Application Failed",
+          description: "There was an error submitting your application.",
+          variant: "destructive"
+        });
+        return;
+      }
+
       toast({
         title: "Application Submitted",
         description: `Your application for ${selectedJob.title} has been sent successfully.`
       });
-      setApplicationMessage('');
+      
       setSelectedJob(null);
-    } else {
+      await refreshJobs();
+    } catch (error) {
+      console.error('Error applying to job:', error);
       toast({
-        title: "Application Failed", 
-        description: "You may have already applied to this job or there was an error.",
+        title: "Application Failed",
+        description: "There was an error submitting your application.",
         variant: "destructive"
       });
+    } finally {
+      setIsApplying(false);
     }
-    
-    setIsApplying(false);
   };
 
   const formatDate = (dateString: string) => {
@@ -113,7 +168,7 @@ const StudentDashboard = () => {
       case 'job-search':
         return (
           <div className="space-y-6">
-            {/* Fixed Search Bar Container */}
+            {/* Search Bar */}
             <div className="sticky top-0 z-10 bg-white pb-4">
               <div className="w-full max-w-2xl">
                 <Card>
@@ -138,7 +193,7 @@ const StudentDashboard = () => {
               </div>
             </div>
 
-            {/* Dynamic Job Listings Below */}
+            {/* Job Listings */}
             <div className="pt-4">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">Available Opportunities</h2>
@@ -200,72 +255,14 @@ const StudentDashboard = () => {
                                 View & Apply
                               </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                              <DialogHeader>
-                                <DialogTitle className="text-xl">{selectedJob?.title}</DialogTitle>
-                                <DialogDescription className="text-lg">
-                                  {selectedJob?.company} • {selectedJob?.location}
-                                </DialogDescription>
-                              </DialogHeader>
-                              
-                              {selectedJob && (
-                                <div className="space-y-6">
-                                  <div>
-                                    <h4 className="font-semibold mb-2">Job Description</h4>
-                                    <p className="text-gray-700">{selectedJob.description}</p>
-                                  </div>
-
-                                  <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                      <h4 className="font-semibold mb-2">Compensation</h4>
-                                      <p className="text-gray-700">{selectedJob.salary}</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="font-semibold mb-2">Job Type</h4>
-                                      <p className="text-gray-700 capitalize">{selectedJob.type}</p>
-                                    </div>
-                                  </div>
-
-                                  <div>
-                                    <h4 className="font-semibold mb-2">Application Deadline</h4>
-                                    <p className="text-gray-700">{formatDate(selectedJob.deadline)}</p>
-                                  </div>
-
-                                  <div className="border-t pt-6">
-                                    <h4 className="font-semibold mb-2">Apply for this position</h4>
-                                    <div className="space-y-4">
-                                      <div>
-                                        <Label htmlFor="message">Cover Message (Optional)</Label>
-                                        <Textarea
-                                          id="message"
-                                          placeholder="Tell the employer why you're interested in this position..."
-                                          value={applicationMessage}
-                                          onChange={(e) => setApplicationMessage(e.target.value)}
-                                          rows={4}
-                                        />
-                                      </div>
-                                      
-                                      <div className="bg-yellow-50 p-4 rounded-lg">
-                                        <div className="flex items-center space-x-2 text-yellow-800">
-                                          <FileText className="h-4 w-4" />
-                                          <p className="text-sm">
-                                            Resume upload feature coming soon. For now, mention your key qualifications in the message above.
-                                          </p>
-                                        </div>
-                                      </div>
-
-                                      <Button 
-                                        onClick={handleApply}
-                                        disabled={isApplying}
-                                        className="w-full bg-blue-600 hover:bg-blue-700"
-                                      >
-                                        {isApplying ? 'Submitting Application...' : 'Submit Application'}
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </DialogContent>
+                            {selectedJob && (
+                              <JobApplicationForm
+                                job={selectedJob}
+                                onSubmit={handleApply}
+                                onCancel={() => setSelectedJob(null)}
+                                isSubmitting={isApplying}
+                              />
+                            )}
                           </Dialog>
                         </div>
                       </CardContent>
@@ -280,7 +277,7 @@ const StudentDashboard = () => {
       case 'my-applications':
         return (
           <div className="space-y-6">
-            {/* Fixed Header Container */}
+            {/* Header with filters */}
             <div className="sticky top-0 z-10 bg-white pb-4">
               <div className="flex items-center justify-between w-full">
                 <div className="flex-shrink-0">
@@ -327,7 +324,7 @@ const StudentDashboard = () => {
               </div>
             </div>
             
-            {/* Dynamic Applications Grid Below */}
+            {/* Applications Grid */}
             <div className="pt-4">
               {filteredApplications.length === 0 ? (
                 <Card>
@@ -414,7 +411,6 @@ const StudentDashboard = () => {
           </header>
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {/* Main Content */}
             {renderContent()}
           </div>
         </SidebarInset>

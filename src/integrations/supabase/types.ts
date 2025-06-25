@@ -11,6 +11,9 @@ export type Database = {
     Tables: {
       applications: {
         Row: {
+          additional_comments: string | null
+          applicant_email: string | null
+          applicant_name: string | null
           applied_at: string
           cover_letter: string | null
           id: string
@@ -20,6 +23,9 @@ export type Database = {
           student_id: string
         }
         Insert: {
+          additional_comments?: string | null
+          applicant_email?: string | null
+          applicant_name?: string | null
           applied_at?: string
           cover_letter?: string | null
           id?: string
@@ -29,6 +35,9 @@ export type Database = {
           student_id: string
         }
         Update: {
+          additional_comments?: string | null
+          applicant_email?: string | null
+          applicant_name?: string | null
           applied_at?: string
           cover_letter?: string | null
           id?: string

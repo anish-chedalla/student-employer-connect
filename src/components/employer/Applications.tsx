@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, FileText, Mail, Check, X, MessageSquare } from 'lucide-react';
+import { Users, FileText, Mail, Check, X, MessageSquare, Download, User, Phone } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Application {
@@ -19,6 +19,9 @@ interface Application {
   cover_letter?: string;
   resume_url?: string;
   applied_at: string;
+  applicant_name?: string;
+  applicant_email?: string;
+  additional_comments?: string;
   job: {
     title: string;
     company: string;
@@ -50,7 +53,7 @@ export const Applications = () => {
       }
 
       try {
-        // First get applications for employer's jobs
+        // Get applications for employer's jobs
         const { data: applicationsData, error: applicationsError } = await supabase
           .from('applications')
           .select(`
@@ -60,7 +63,10 @@ export const Applications = () => {
             status,
             cover_letter,
             resume_url,
-            applied_at
+            applied_at,
+            applicant_name,
+            applicant_email,
+            additional_comments
           `)
           .in('job_id', jobIds);
 
@@ -177,6 +183,46 @@ export const Applications = () => {
     }
   };
 
+  const downloadResume = async (resumeUrl: string, applicantName: string) => {
+    try {
+      const { data, error } = await supabase.storage
+        .from('resumes')
+        .download(resumeUrl);
+
+      if (error) {
+        console.error('Error downloading resume:', error);
+        toast({
+          title: "Download Failed",
+          description: "Could not download the resume file",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Create download link
+      const url = URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${applicantName}_Resume.${resumeUrl.split('.').pop()}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Download Started",
+        description: "Resume download has started",
+      });
+    } catch (error) {
+      console.error('Error downloading resume:', error);
+      toast({
+        title: "Download Failed",
+        description: "Could not download the resume file",
+        variant: "destructive"
+      });
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -228,11 +274,13 @@ export const Applications = () => {
               <CardContent className="p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-1">{application.student.full_name}</h3>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                      {application.applicant_name || application.student.full_name}
+                    </h3>
                     <p className="text-lg text-gray-700 mb-2">Applied for: {application.job.title}</p>
                     <div className="flex items-center text-gray-600 mb-2">
                       <Mail className="h-4 w-4 mr-1" />
-                      <span>{application.student.email}</span>
+                      <span>{application.applicant_email || application.student.email}</span>
                     </div>
                   </div>
                   <div className="ml-4 flex items-center space-x-2">
@@ -242,14 +290,39 @@ export const Applications = () => {
                   </div>
                 </div>
 
-                {application.cover_letter && (
-                  <div className="mb-4">
-                    <h4 className="font-medium text-gray-900 mb-2">Cover Letter:</h4>
-                    <p className="text-gray-700 bg-gray-50 p-3 rounded-lg">{application.cover_letter}</p>
-                  </div>
-                )}
+                {/* Enhanced Application Details */}
+                <div className="space-y-4">
+                  {application.cover_letter && (
+                    <div>
+                      <h4 className="font-medium text-gray-900 mb-2">Cover Letter:</h4>
+                      <p className="text-gray-700 bg-gray-50 p-3 rounded-lg">{application.cover_letter}</p>
+                    </div>
+                  )}
 
-                <div className="flex justify-between items-center">
+                  {application.additional_comments && (
+                    <div>
+                      <h4 className="font-medium text-gray-900 mb-2">Additional Comments:</h4>
+                      <p className="text-gray-700 bg-gray-50 p-3 rounded-lg">{application.additional_comments}</p>
+                    </div>
+                  )}
+
+                  {application.resume_url && (
+                    <div>
+                      <h4 className="font-medium text-gray-900 mb-2">Resume:</h4>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => downloadResume(application.resume_url!, application.applicant_name || application.student.full_name)}
+                        className="flex items-center space-x-2"
+                      >
+                        <Download className="h-4 w-4" />
+                        <span>Download Resume</span>
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-between items-center mt-6 pt-4 border-t">
                   <div className="text-sm text-gray-500">
                     <span className="font-medium">Applied:</span> {formatDate(application.applied_at)}
                   </div>
@@ -272,7 +345,7 @@ export const Applications = () => {
                           <DialogHeader>
                             <DialogTitle>Accept Application</DialogTitle>
                             <DialogDescription>
-                              You are about to accept {application.student.full_name}'s application for {application.job.title}.
+                              You are about to accept {application.applicant_name || application.student.full_name}'s application for {application.job.title}.
                               Write a message to the applicant:
                             </DialogDescription>
                           </DialogHeader>
@@ -319,7 +392,7 @@ export const Applications = () => {
                           <DialogHeader>
                             <DialogTitle>Decline Application</DialogTitle>
                             <DialogDescription>
-                              You are about to decline {application.student.full_name}'s application for {application.job.title}.
+                              You are about to decline {application.applicant_name || application.student.full_name}'s application for {application.job.title}.
                               Write a message to the applicant:
                             </DialogDescription>
                           </DialogHeader>
