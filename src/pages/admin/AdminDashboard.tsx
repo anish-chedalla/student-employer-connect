@@ -2,8 +2,8 @@
 import { useState } from 'react';
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AdminSidebar } from '../../components/AdminSidebar';
-import { EmployerVerification } from './components/EmployerVerification';
-import { JobManagement } from './components/JobManagement';
+import EmployerVerification from './components/EmployerVerification';
+import JobManagement from './components/JobManagement';
 import { useAuth } from '../../contexts/AuthContext';
 
 const AdminDashboard = () => {
