@@ -1,10 +1,7 @@
-
 import { GraduationCap, Mail, Phone, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
 const Footer = () => {
-  return (
-    <footer className="bg-gray-900 text-white">
+  return <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid gap-8 md:grid-cols-4">
           {/* Brand Section */}
@@ -27,7 +24,7 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h4 className="font-semibold mb-4">Contact Us</h4>
+            <h4 className="font-semibold mb-4">Contact Paradise Valley HS</h4>
             <div className="space-y-3 text-sm text-gray-400">
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4" />
@@ -35,7 +32,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4" />
-                <span>(555) 123-4567</span>
+                <span>(602) 449-7000</span>
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4" />
@@ -65,13 +62,9 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-          <p className="text-gray-400 text-sm">
-            © 2024 SchoolConnect Career Services Portal. All rights reserved.
-          </p>
+          <p className="text-gray-400 text-sm">© 2025 SchoolConnect Career Services Portal. All rights reserved.</p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
