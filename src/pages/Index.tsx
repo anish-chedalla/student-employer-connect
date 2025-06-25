@@ -28,26 +28,26 @@ const Index = () => {
           
           {/* Quick Stats */}
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3 max-w-2xl mx-auto">
-            <div className="bg-white rounded-lg p-4 shadow-sm border">
+            <div className="bg-white rounded-lg p-4 shadow-sm border transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl hover:shadow-blue-100 hover:bg-gradient-to-br hover:from-blue-50 hover:to-white hover:ring-2 hover:ring-blue-200 group cursor-pointer">
               <div className="flex items-center justify-center space-x-2">
-                <Users className="h-5 w-5 text-blue-600" />
-                <span className="text-2xl font-bold text-gray-900">500+</span>
+                <Users className="h-5 w-5 text-blue-600 group-hover:scale-110 transition-transform duration-300" />
+                <span className="text-2xl font-bold text-gray-900 group-hover:text-blue-700 transition-colors duration-300">500+</span>
               </div>
-              <p className="text-sm text-gray-600 mt-1">Active Students</p>
+              <p className="text-sm text-gray-600 mt-1 group-hover:text-gray-700 transition-colors duration-300">Active Students</p>
             </div>
-            <div className="bg-white rounded-lg p-4 shadow-sm border">
+            <div className="bg-white rounded-lg p-4 shadow-sm border transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl hover:shadow-green-100 hover:bg-gradient-to-br hover:from-green-50 hover:to-white hover:ring-2 hover:ring-green-200 group cursor-pointer">
               <div className="flex items-center justify-center space-x-2">
-                <Building2 className="h-5 w-5 text-green-600" />
-                <span className="text-2xl font-bold text-gray-900">150+</span>
+                <Building2 className="h-5 w-5 text-green-600 group-hover:scale-110 transition-transform duration-300" />
+                <span className="text-2xl font-bold text-gray-900 group-hover:text-green-700 transition-colors duration-300">150+</span>
               </div>
-              <p className="text-sm text-gray-600 mt-1">Partner Employers</p>
+              <p className="text-sm text-gray-600 mt-1 group-hover:text-gray-700 transition-colors duration-300">Partner Employers</p>
             </div>
-            <div className="bg-white rounded-lg p-4 shadow-sm border">
+            <div className="bg-white rounded-lg p-4 shadow-sm border transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl hover:shadow-purple-100 hover:bg-gradient-to-br hover:from-purple-50 hover:to-white hover:ring-2 hover:ring-purple-200 group cursor-pointer">
               <div className="flex items-center justify-center space-x-2">
-                <Briefcase className="h-5 w-5 text-purple-600" />
-                <span className="text-2xl font-bold text-gray-900">200+</span>
+                <Briefcase className="h-5 w-5 text-purple-600 group-hover:scale-110 transition-transform duration-300" />
+                <span className="text-2xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors duration-300">200+</span>
               </div>
-              <p className="text-sm text-gray-600 mt-1">Job Placements</p>
+              <p className="text-sm text-gray-600 mt-1 group-hover:text-gray-700 transition-colors duration-300">Job Placements</p>
             </div>
           </div>
         </div>
