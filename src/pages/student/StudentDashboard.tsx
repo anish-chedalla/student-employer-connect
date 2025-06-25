@@ -11,7 +11,7 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/s
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
 import { useToast } from '@/hooks/use-toast';
-import { GraduationCap, Search, MapPin, Clock, DollarSign, Building2, FileText, Send, Calendar, Users } from 'lucide-react';
+import { GraduationCap, Search, MapPin, Clock, DollarSign, Building2, FileText, Send, Calendar, Users, CheckCircle } from 'lucide-react';
 import StudentSidebar from '../../components/StudentSidebar';
 
 const StudentDashboard = () => {
@@ -102,7 +102,7 @@ const StudentDashboard = () => {
 
             <div className="grid gap-6">
               {filteredJobs.length === 0 ? (
-                <Card className="min-h-[200px]">
+                <Card className="w-full">
                   <CardContent className="p-12 text-center">
                     <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
@@ -321,10 +321,10 @@ const StudentDashboard = () => {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Profile Views</p>
-                      <p className="text-2xl font-bold text-gray-900">12</p>
+                      <p className="text-sm font-medium text-gray-600">Jobs Accepted</p>
+                      <p className="text-2xl font-bold text-gray-900">0</p>
                     </div>
-                    <Users className="h-8 w-8 text-purple-600" />
+                    <CheckCircle className="h-8 w-8 text-green-600" />
                   </div>
                 </CardContent>
               </Card>
