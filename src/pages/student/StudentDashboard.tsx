@@ -114,26 +114,28 @@ const StudentDashboard = () => {
       case 'job-search':
         return (
           <div className="space-y-6">
-            {/* Search Bar at the top */}
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-4">
-                  <div className="flex-1">
-                    <Label htmlFor="search" className="sr-only">Search jobs</Label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                      <Input
-                        id="search"
-                        placeholder="Search jobs by title, company, or description..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10"
-                      />
+            {/* Fixed-width Search Bar */}
+            <div className="w-full max-w-2xl">
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex-1">
+                      <Label htmlFor="search" className="sr-only">Search jobs</Label>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <Input
+                          id="search"
+                          placeholder="Search jobs by title, company, or description..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Job Listings */}
             <div className="flex items-center justify-between">
@@ -275,10 +277,10 @@ const StudentDashboard = () => {
       case 'my-applications':
         return (
           <div className="space-y-6">
+            {/* Header with title left and filter right */}
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900">My Applications</h2>
               
-              {/* Status Filter Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="flex items-center space-x-2">
@@ -316,6 +318,7 @@ const StudentDashboard = () => {
               </DropdownMenu>
             </div>
             
+            {/* 3-column grid layout for applications */}
             {filteredApplications.length === 0 ? (
               <Card>
                 <CardContent className="p-12 text-center">
@@ -332,33 +335,36 @@ const StudentDashboard = () => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredApplications.map((application) => (
-                  <Card key={application.id}>
+                  <Card key={application.id} className="h-fit">
                     <CardContent className="p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                            {getJobTitle(application.job_id)}
-                          </h3>
-                          <p className="text-lg text-gray-700 mb-2">
-                            {getJobCompany(application.job_id)}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Applied on {formatDate(application.applied_at)}
-                          </p>
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                              {getJobTitle(application.job_id)}
+                            </h3>
+                            <p className="text-md text-gray-700 mb-2">
+                              {getJobCompany(application.job_id)}
+                            </p>
+                          </div>
+                          <Badge variant={getStatusBadgeVariant(application.status)} className="ml-2">
+                            {application.status}
+                          </Badge>
                         </div>
-                        <Badge variant={getStatusBadgeVariant(application.status)}>
-                          {application.status}
-                        </Badge>
+                        
+                        <p className="text-sm text-gray-600">
+                          Applied on {formatDate(application.applied_at)}
+                        </p>
+                        
+                        {application.cover_letter && (
+                          <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                            <h4 className="font-medium mb-2 text-sm">Cover Letter</h4>
+                            <p className="text-xs text-gray-700 line-clamp-3">{application.cover_letter}</p>
+                          </div>
+                        )}
                       </div>
-                      
-                      {application.cover_letter && (
-                        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                          <h4 className="font-medium mb-2">Cover Letter</h4>
-                          <p className="text-sm text-gray-700">{application.cover_letter}</p>
-                        </div>
-                      )}
                     </CardContent>
                   </Card>
                 ))}
