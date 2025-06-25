@@ -25,6 +25,7 @@ export interface JobApplication {
   cover_letter?: string;
   resume_url?: string;
   applied_at: string;
+  employer_message?: string;
 }
 
 interface JobContextType {

@@ -16,6 +16,7 @@ export type Database = {
           applicant_name: string | null
           applied_at: string
           cover_letter: string | null
+          employer_message: string | null
           id: string
           job_id: string
           resume_url: string | null
@@ -28,6 +29,7 @@ export type Database = {
           applicant_name?: string | null
           applied_at?: string
           cover_letter?: string | null
+          employer_message?: string | null
           id?: string
           job_id: string
           resume_url?: string | null
@@ -40,6 +42,7 @@ export type Database = {
           applicant_name?: string | null
           applied_at?: string
           cover_letter?: string | null
+          employer_message?: string | null
           id?: string
           job_id?: string
           resume_url?: string | null
