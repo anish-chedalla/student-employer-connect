@@ -1,8 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,38 +29,10 @@ const AdminDashboard = () => {
   const { profile, logout } = useAuth();
   const { jobs } = useJobs();
   const [activeSection, setActiveSection] = useState('overview');
-  const [employerCount, setEmployerCount] = useState(0);
-  const [studentCount, setStudentCount] = useState(0);
 
   const pendingJobs = jobs.filter(job => job.status === 'pending');
   const approvedJobs = jobs.filter(job => job.status === 'approved');
   const rejectedJobs = jobs.filter(job => job.status === 'rejected');
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        // Count verified employers
-        const { count: employerCountResult } = await supabase
-          .from('profiles')
-          .select('*', { count: 'exact', head: true })
-          .eq('role', 'employer')
-          .eq('verified', true);
-
-        // Count students
-        const { count: studentCountResult } = await supabase
-          .from('profiles')
-          .select('*', { count: 'exact', head: true })
-          .eq('role', 'student');
-
-        setEmployerCount(employerCountResult || 0);
-        setStudentCount(studentCountResult || 0);
-      } catch (error) {
-        console.error('Error fetching stats:', error);
-      }
-    };
-
-    fetchStats();
-  }, []);
 
   const menuItems = [
     {
@@ -175,26 +145,12 @@ const AdminDashboard = () => {
 
               <Card className="col-span-3">
                 <CardHeader>
-                  <CardTitle>Platform Statistics</CardTitle>
+                  <CardTitle>Quick Actions</CardTitle>
                   <CardDescription>
-                    Real-time platform metrics
+                    Common administrative tasks
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Users className="h-4 w-4 text-blue-600" />
-                      <span className="text-sm">Active Students</span>
-                    </div>
-                    <span className="text-lg font-bold text-blue-600">{studentCount}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Shield className="h-4 w-4 text-green-600" />
-                      <span className="text-sm">Verified Employers</span>
-                    </div>
-                    <span className="text-lg font-bold text-green-600">{employerCount}</span>
-                  </div>
+                <CardContent className="space-y-2">
                   <Button 
                     className="w-full justify-start" 
                     variant="outline"
