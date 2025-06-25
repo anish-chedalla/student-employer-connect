@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +23,7 @@ const StudentDashboard = () => {
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [applicationMessage, setApplicationMessage] = useState('');
   const [isApplying, setIsApplying] = useState(false);
-  const [activeSection, setActiveSection] = useState('browse-jobs');
+  const [activeSection, setActiveSection] = useState('job-search');
 
   const approvedJobs = getApprovedJobs();
   
@@ -67,7 +68,6 @@ const StudentDashboard = () => {
 
   const renderContent = () => {
     switch (activeSection) {
-      case 'browse-jobs':
       case 'job-search':
         return (
           <div className="space-y-6">
@@ -121,9 +121,6 @@ const StudentDashboard = () => {
                           <p className="text-lg text-gray-700 mb-2">{job.company}</p>
                           <p className="text-gray-600 line-clamp-3">{job.description}</p>
                         </div>
-                        <Badge variant="outline" className="ml-4">
-                          {job.status}
-                        </Badge>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

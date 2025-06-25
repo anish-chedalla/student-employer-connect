@@ -12,7 +12,7 @@ import {
   SidebarHeader,
   SidebarFooter
 } from "@/components/ui/sidebar";
-import { Search, Send, User, LogOut, Briefcase } from 'lucide-react';
+import { Send, User, LogOut, Briefcase } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from "@/components/ui/button";
 
@@ -25,11 +25,6 @@ const StudentSidebar = ({ activeSection, onSectionChange }: StudentSidebarProps)
   const { profile, logout } = useAuth();
 
   const browseItems = [
-    {
-      title: "All Jobs",
-      id: "browse-jobs",
-      icon: Search,
-    },
     {
       title: "Job Search",
       id: "job-search",
