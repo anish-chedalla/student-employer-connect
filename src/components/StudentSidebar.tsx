@@ -42,14 +42,14 @@ const StudentSidebar = ({ activeSection, onSectionChange }: StudentSidebarProps)
 
   return (
     <Sidebar>
-      <SidebarHeader className="p-4 border-b">
-        <div className="flex items-center space-x-3">
+      <SidebarHeader>
+        <div className="flex items-center space-x-2 px-2 py-4">
           <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
             <User className="h-4 w-4 text-white" />
           </div>
           <div>
-            <p className="font-semibold text-sm">{profile?.full_name}</p>
-            <p className="text-xs text-gray-600">Student</p>
+            <h2 className="text-lg font-bold text-gray-900">Student</h2>
+            <p className="text-sm text-gray-600">{profile?.full_name}</p>
           </div>
         </div>
       </SidebarHeader>
@@ -64,8 +64,9 @@ const StudentSidebar = ({ activeSection, onSectionChange }: StudentSidebarProps)
                   <SidebarMenuButton 
                     onClick={() => onSectionChange(item.id)}
                     isActive={activeSection === item.id}
+                    className="w-full justify-start"
                   >
-                    <item.icon className="h-4 w-4" />
+                    <item.icon className="h-4 w-4 mr-2" />
                     <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -83,8 +84,9 @@ const StudentSidebar = ({ activeSection, onSectionChange }: StudentSidebarProps)
                   <SidebarMenuButton 
                     onClick={() => onSectionChange(item.id)}
                     isActive={activeSection === item.id}
+                    className="w-full justify-start"
                   >
-                    <item.icon className="h-4 w-4" />
+                    <item.icon className="h-4 w-4 mr-2" />
                     <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -94,15 +96,19 @@ const StudentSidebar = ({ activeSection, onSectionChange }: StudentSidebarProps)
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t">
-        <Button 
-          variant="outline" 
-          onClick={logout}
-          className="w-full flex items-center space-x-2"
-        >
-          <LogOut className="h-4 w-4" />
-          <span>Logout</span>
-        </Button>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <Button 
+              variant="ghost" 
+              onClick={logout}
+              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
   );

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
 import { useToast } from '@/hooks/use-toast';
@@ -48,6 +49,18 @@ const StudentDashboard = () => {
 
   // Filter applications based on selected status filters
   const filteredApplications = sortedApplications.filter(app => statusFilters[app.status]);
+
+  // Get section titles
+  const getSectionTitle = (section: string) => {
+    switch (section) {
+      case 'job-search':
+        return 'Job Search';
+      case 'my-applications':
+        return 'My Applications';
+      default:
+        return 'Dashboard';
+    }
+  };
 
   const handleApply = async (applicationData: {
     coverLetter: string;
@@ -388,29 +401,23 @@ const StudentDashboard = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="min-h-screen flex w-full bg-gradient-to-br from-blue-50 via-white to-indigo-50">
         <StudentSidebar 
           activeSection={activeSection} 
           onSectionChange={setActiveSection} 
         />
-        <SidebarInset className="flex-1">
-          {/* Header */}
-          <header className="bg-white shadow-sm border-b">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-between h-16">
-                <div className="flex items-center space-x-3">
-                  <SidebarTrigger />
-                  <GraduationCap className="h-8 w-8 text-blue-600" />
-                  <div>
-                    <h1 className="text-xl font-bold text-gray-900">Student Dashboard</h1>
-                    <p className="text-sm text-gray-600">Welcome back, {profile?.full_name}</p>
-                  </div>
-                </div>
-              </div>
+        <SidebarInset>
+          <div className="p-6">
+            {/* Section Header */}
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-gray-900">{getSectionTitle(activeSection)}</h1>
+              <p className="text-gray-600 mt-2">
+                {activeSection === 'job-search' && 'Browse and apply to available job opportunities'}
+                {activeSection === 'my-applications' && 'Track your submitted applications and their status'}
+              </p>
             </div>
-          </header>
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {/* Main Content */}
             {renderContent()}
           </div>
         </SidebarInset>
