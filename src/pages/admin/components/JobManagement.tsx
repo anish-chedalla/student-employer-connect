@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useJobs } from '../../../contexts/JobContext';
 import { Button } from "@/components/ui/button";
@@ -15,8 +14,17 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 const JobManagement = () => {
-  const { jobs, updateJobStatus } = useJobs();
+  const { jobs, updateJobStatus, isLoading } = useJobs();
   const { toast } = useToast();
+
+  // Show loading state while context is initializing
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   const pendingJobs = jobs.filter(job => job.status === 'pending');
   const approvedJobs = jobs.filter(job => job.status === 'approved');
