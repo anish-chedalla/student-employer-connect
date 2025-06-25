@@ -12,7 +12,7 @@ import {
   SidebarHeader,
   SidebarFooter
 } from "@/components/ui/sidebar";
-import { Send, User, LogOut, Briefcase } from 'lucide-react';
+import { Send, User, LogOut, Briefcase, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from "@/components/ui/button";
 
@@ -34,9 +34,19 @@ const StudentSidebar = ({ activeSection, onSectionChange }: StudentSidebarProps)
 
   const applicationItems = [
     {
-      title: "My Applications",
-      id: "my-applications",
-      icon: Send,
+      title: "Accepted",
+      id: "accepted-applications",
+      icon: CheckCircle,
+    },
+    {
+      title: "Rejected",
+      id: "rejected-applications",
+      icon: XCircle,
+    },
+    {
+      title: "Pending",
+      id: "pending-applications",
+      icon: Clock,
     }
   ];
 
@@ -76,7 +86,7 @@ const StudentSidebar = ({ activeSection, onSectionChange }: StudentSidebarProps)
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Applications</SidebarGroupLabel>
+          <SidebarGroupLabel>My Applications</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {applicationItems.map((item) => (
