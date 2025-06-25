@@ -5,11 +5,15 @@ import { GraduationCap } from 'lucide-react';
 
 const StickyNavigation = () => {
   const [activeSection, setActiveSection] = useState('home');
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       const sections = ['home', 'job-postings', 'features', 'testimonials', 'about'];
       const scrollPosition = window.scrollY + 100;
+      
+      // Check if scrolled past hero section
+      setIsScrolled(window.scrollY > 50);
 
       for (const section of sections) {
         const element = document.getElementById(section);
@@ -32,17 +36,27 @@ const StickyNavigation = () => {
     { id: 'job-postings', label: 'Job Postings', href: '#job-postings' },
     { id: 'submit-job', label: 'Submit a Job', href: '/employer/login' },
     { id: 'apply', label: 'Apply', href: '/student/login' },
-    { id: 'admin', label: 'Admin Panel', href: '/admin/login' },
+    { id: 'admin', label: 'Admin', href: '/admin/login' },
     { id: 'about', label: 'About', href: '#about' }
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm border-b">
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      isScrolled 
+        ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200' 
+        : 'bg-transparent'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-3">
-            <GraduationCap className="h-6 w-6 text-blue-600" />
-            <span className="text-lg font-bold text-gray-900">SchoolConnect</span>
+            <GraduationCap className={`h-6 w-6 transition-colors duration-300 ${
+              isScrolled ? 'text-blue-600' : 'text-white'
+            }`} />
+            <span className={`text-lg font-bold transition-colors duration-300 ${
+              isScrolled ? 'text-gray-900' : 'text-white'
+            }`}>
+              SchoolConnect
+            </span>
           </div>
           
           <div className="hidden md:flex items-center space-x-8">
@@ -51,8 +65,14 @@ const StickyNavigation = () => {
                 <a
                   key={item.id}
                   href={item.href}
-                  className={`text-sm font-medium transition-colors hover:text-blue-600 ${
-                    activeSection === item.id ? 'text-blue-600' : 'text-gray-700'
+                  className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                    isScrolled
+                      ? activeSection === item.id 
+                        ? 'text-blue-600' 
+                        : 'text-gray-700 hover:text-blue-600'
+                      : activeSection === item.id
+                        ? 'text-blue-300'
+                        : 'text-white/90 hover:text-white'
                   }`}
                 >
                   {item.label}
@@ -61,7 +81,11 @@ const StickyNavigation = () => {
                 <Link
                   key={item.id}
                   to={item.href}
-                  className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                  className={`text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                    isScrolled
+                      ? 'text-gray-700 hover:text-blue-600'
+                      : 'text-white/90 hover:text-white'
+                  }`}
                 >
                   {item.label}
                 </Link>
