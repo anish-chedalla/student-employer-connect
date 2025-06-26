@@ -9,15 +9,18 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { GraduationCap, Search, MapPin, Clock, DollarSign, Building2, FileText, Send, Calendar, Users, CheckCircle, XCircle } from 'lucide-react';
 import StudentSidebar from '../../components/StudentSidebar';
 import { JobApplicationForm } from '../../components/student/JobApplicationForm';
+import MobileJobSearch from '../../components/student/MobileJobSearch';
 
 const StudentDashboard = () => {
   const { user, profile } = useAuth();
   const { getApprovedJobs, getStudentApplications, refreshJobs } = useJobs();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedJob, setSelectedJob] = useState<any>(null);
@@ -187,7 +190,7 @@ const StudentDashboard = () => {
 
       return (
         <Card>
-          <CardContent className="p-12 text-center">
+          <CardContent className={`${isMobile ? 'p-8' : 'p-12'} text-center`}>
             <Send className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               {emptyMessages[activeSection] || 'No applications found'}
@@ -201,17 +204,17 @@ const StudentDashboard = () => {
     }
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'} gap-6`}>
         {applications.map((application) => (
           <Card key={application.id} className="h-fit">
-            <CardContent className="p-6">
+            <CardContent className={`${isMobile ? 'p-4' : 'p-6'}`}>
               <div className="space-y-4">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                    <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold text-gray-900 mb-1`}>
                       {getJobTitle(application.job_id)}
                     </h3>
-                    <p className="text-md text-gray-700 mb-2">
+                    <p className={`${isMobile ? 'text-sm' : 'text-md'} text-gray-700 mb-2`}>
                       {getJobCompany(application.job_id)}
                     </p>
                   </div>
@@ -255,9 +258,20 @@ const StudentDashboard = () => {
   const renderContent = () => {
     switch (activeSection) {
       case 'job-search':
+        if (isMobile) {
+          return (
+            <MobileJobSearch
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              filteredJobs={filteredJobs}
+              onJobSelect={setSelectedJob}
+            />
+          );
+        }
+
         return (
           <div className="space-y-6">
-            {/* Search Bar */}
+            {/* Desktop Search Bar */}
             <div className="sticky top-0 z-10 bg-white pb-4">
               <div className="w-full max-w-2xl">
                 <Card>
@@ -282,7 +296,7 @@ const StudentDashboard = () => {
               </div>
             </div>
 
-            {/* Job Listings */}
+            {/* Desktop Job Listings */}
             <div className="pt-4">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">Available Opportunities</h2>
@@ -385,15 +399,29 @@ const StudentDashboard = () => {
           onSectionChange={setActiveSection} 
         />
         <SidebarInset>
-          <div className="p-6">
+          <div className={`${isMobile ? 'p-4' : 'p-6'}`}>
             {/* Section Header */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">{getSectionTitle(activeSection)}</h1>
+              <h1 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-gray-900`}>
+                {getSectionTitle(activeSection)}
+              </h1>
               <p className="text-gray-600 mt-2">{getSectionDescription(activeSection)}</p>
             </div>
 
             {/* Main Content */}
             {renderContent()}
+
+            {/* Job Application Dialog for Mobile */}
+            {selectedJob && (
+              <Dialog open={!!selectedJob} onOpenChange={() => setSelectedJob(null)}>
+                <JobApplicationForm
+                  job={selectedJob}
+                  onSubmit={handleApply}
+                  onCancel={() => setSelectedJob(null)}
+                  isSubmitting={isApplying}
+                />
+              </Dialog>
+            )}
           </div>
         </SidebarInset>
       </div>

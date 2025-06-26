@@ -2,10 +2,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { GraduationCap } from 'lucide-react';
+import { useIsMobile } from "@/hooks/use-mobile";
+import MobileNavigation from './MobileNavigation';
 
 const StickyNavigation = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [isScrolled, setIsScrolled] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,6 +42,11 @@ const StickyNavigation = () => {
     { id: 'admin', label: 'Admin', href: '/admin/login' },
     { id: 'about', label: 'About', href: '#about' }
   ];
+
+  // Render mobile navigation on mobile devices
+  if (isMobile) {
+    return <MobileNavigation />;
+  }
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
