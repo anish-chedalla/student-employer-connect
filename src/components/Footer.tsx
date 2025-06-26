@@ -1,7 +1,10 @@
+
 import { GraduationCap, Mail, Phone, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
 const Footer = () => {
-  return <footer className="bg-gray-900 text-white">
+  return (
+    <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid gap-8 md:grid-cols-4">
           {/* Brand Section */}
@@ -45,10 +48,10 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Legal</h4>
             <div className="space-y-2 text-sm text-gray-400">
-              <Link to="/terms" className="block hover:text-white transition-colors">
+              <Link to="/legal/terms" className="block hover:text-white transition-colors">
                 Terms of Use
               </Link>
-              <Link to="/privacy" className="block hover:text-white transition-colors">
+              <Link to="/legal/privacy" className="block hover:text-white transition-colors">
                 Privacy Policy
               </Link>
               <Link to="/student/login" className="block hover:text-white transition-colors">
@@ -65,6 +68,8 @@ const Footer = () => {
           <p className="text-gray-400 text-sm">© 2025 SchoolConnect Career Services Portal. All rights reserved.</p>
         </div>
       </div>
-    </footer>;
+    </footer>
+  );
 };
+
 export default Footer;
