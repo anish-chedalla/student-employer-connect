@@ -15,6 +15,7 @@ import EmployerDashboard from "./pages/employer/EmployerDashboard";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import TermsOfUse from "./pages/legal/TermsOfUse";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
+import Sources from "./pages/legal/Sources";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -39,6 +40,7 @@ const App = () => (
               {/* Legal Routes */}
               <Route path="/legal/terms" element={<TermsOfUse />} />
               <Route path="/legal/privacy" element={<PrivacyPolicy />} />
+              <Route path="/legal/sources" element={<Sources />} />
               
               {/* Protected Student Routes */}
               <Route path="/student/dashboard" element={
