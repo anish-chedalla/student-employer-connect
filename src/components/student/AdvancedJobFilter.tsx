@@ -22,7 +22,8 @@ interface FilterState {
   searchTerm: string;
   jobType: string[];
   location: string;
-  hourlyRateRange: [number, number];
+  minHourlyRate: number;
+  maxHourlyRate: number;
   datePosted: string;
   company: string[];
 }
@@ -44,7 +45,8 @@ const AdvancedJobFilter = ({
     searchTerm: searchTerm,
     jobType: [],
     location: 'any',
-    hourlyRateRange: [0, 100],
+    minHourlyRate: 0,
+    maxHourlyRate: 100,
     datePosted: 'all',
     company: []
   });
@@ -93,7 +95,7 @@ const AdvancedJobFilter = ({
     }
 
     // Hourly rate filter - extracts numeric values from salary strings and converts to hourly
-    if (filters.hourlyRateRange[0] > 0 || filters.hourlyRateRange[1] < 100) {
+    if (filters.minHourlyRate > 0 || filters.maxHourlyRate < 100) {
       filtered = filtered.filter(job => {
         // Extract numeric values from salary string (handles various formats)
         const salaryNumbers = job.salary.match(/\d+/g);
@@ -105,7 +107,7 @@ const AdvancedJobFilter = ({
             hourlyRate = Math.round(hourlyRate / (40 * 52));
           }
           
-          return hourlyRate >= filters.hourlyRateRange[0] && hourlyRate <= filters.hourlyRateRange[1];
+          return hourlyRate >= filters.minHourlyRate && hourlyRate <= filters.maxHourlyRate;
         }
         return true; // Include jobs where we can't parse salary
       });
@@ -180,7 +182,8 @@ const AdvancedJobFilter = ({
       searchTerm: '',
       jobType: [],
       location: 'any',
-      hourlyRateRange: [0, 100] as [number, number],
+      minHourlyRate: 0,
+      maxHourlyRate: 100,
       datePosted: 'all',
       company: []
     };
@@ -192,7 +195,7 @@ const AdvancedJobFilter = ({
   const activeFilterCount = 
     (filters.jobType.length > 0 ? 1 : 0) +
     (filters.location && filters.location !== 'any' ? 1 : 0) +
-    (filters.hourlyRateRange[0] > 0 || filters.hourlyRateRange[1] < 100 ? 1 : 0) +
+    (filters.minHourlyRate > 0 || filters.maxHourlyRate < 100 ? 1 : 0) +
     (filters.datePosted !== 'all' ? 1 : 0) +
     (filters.company.length > 0 ? 1 : 0);
 
@@ -305,29 +308,45 @@ const AdvancedJobFilter = ({
               </Select>
             </div>
 
-            {/* Hourly Rate Range Filter - Single slider with two handles */}
+            {/* Hourly Rate Range Filter - Two separate sliders */}
             <div>
               <Label className="text-sm font-medium mb-3 block flex items-center space-x-2 text-gray-700">
                 <DollarSign className="h-4 w-4" />
                 <span>Hourly Rate Range</span>
               </Label>
               <div className="space-y-4">
-                <Slider
-                  value={filters.hourlyRateRange}
-                  onValueChange={(value) => setFilters(prev => ({ 
-                    ...prev, 
-                    hourlyRateRange: value as [number, number]
-                  }))}
-                  max={100}
-                  min={0}
-                  step={1}
-                  className="w-full"
-                />
+                <div>
+                  <Label className="text-xs text-gray-600 mb-2 block">
+                    Minimum: ${filters.minHourlyRate}/hr
+                  </Label>
+                  <Slider
+                    value={[filters.minHourlyRate]}
+                    onValueChange={(value) => setFilters(prev => ({ 
+                      ...prev, 
+                      minHourlyRate: value[0] 
+                    }))}
+                    max={100}
+                    min={0}
+                    step={1}
+                    className="w-full"
+                  />
+                </div>
                 
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>${filters.hourlyRateRange[0]}/hr</span>
-                  <span>to</span>
-                  <span>${filters.hourlyRateRange[1]}/hr</span>
+                <div>
+                  <Label className="text-xs text-gray-600 mb-2 block">
+                    Maximum: ${filters.maxHourlyRate}/hr
+                  </Label>
+                  <Slider
+                    value={[filters.maxHourlyRate]}
+                    onValueChange={(value) => setFilters(prev => ({ 
+                      ...prev, 
+                      maxHourlyRate: value[0] 
+                    }))}
+                    max={100}
+                    min={0}
+                    step={1}
+                    className="w-full"
+                  />
                 </div>
               </div>
             </div>
