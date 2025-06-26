@@ -32,10 +32,14 @@ const MobileNavigation = () => {
           <span className="text-lg font-bold text-gray-900">SchoolConnect</span>
         </div>
         
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Make the entire right side clickable */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="flex items-center justify-center p-2"
+            >
               <Menu className="h-6 w-6 text-gray-700" />
               <span className="sr-only">Open menu</span>
             </Button>

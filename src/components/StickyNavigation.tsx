@@ -43,11 +43,12 @@ const StickyNavigation = () => {
     { id: 'about', label: 'About', href: '#about' }
   ];
 
-  // Render mobile navigation on mobile devices
+  // Always render mobile navigation on mobile devices
   if (isMobile) {
     return <MobileNavigation />;
   }
 
+  // Desktop navigation
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       isScrolled 
