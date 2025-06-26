@@ -22,14 +22,15 @@ interface FilterState {
   searchTerm: string;
   jobType: string[];
   location: string;
-  salaryRange: [number, number];
+  minHourlyRate: number;
+  maxHourlyRate: number;
   datePosted: string;
   company: string[];
 }
 
 /**
  * AdvancedJobFilter provides comprehensive filtering capabilities for job postings
- * Features include: text search, job type filtering, location filter, salary range, 
+ * Features include: text search, job type filtering, location filter, hourly rate range, 
  * date posted filter, and company-specific filtering
  * Real-time filtering with visual feedback and filter count display
  */
@@ -43,8 +44,9 @@ const AdvancedJobFilter = ({
   const [filters, setFilters] = useState<FilterState>({
     searchTerm: searchTerm,
     jobType: [],
-    location: 'any', // Changed from empty string to 'any'
-    salaryRange: [0, 100000],
+    location: 'any',
+    minHourlyRate: 0,
+    maxHourlyRate: 100,
     datePosted: 'all',
     company: []
   });
@@ -92,15 +94,20 @@ const AdvancedJobFilter = ({
       filtered = filtered.filter(job => filters.company.includes(job.company));
     }
 
-    // Salary range filter - extracts numeric values from salary strings
-    const [minSalary, maxSalary] = filters.salaryRange;
-    if (minSalary > 0 || maxSalary < 100000) {
+    // Hourly rate filter - extracts numeric values from salary strings and converts to hourly
+    if (filters.minHourlyRate > 0 || filters.maxHourlyRate < 100) {
       filtered = filtered.filter(job => {
         // Extract numeric values from salary string (handles various formats)
         const salaryNumbers = job.salary.match(/\d+/g);
         if (salaryNumbers && salaryNumbers.length > 0) {
-          const jobSalary = parseInt(salaryNumbers[0]);
-          return jobSalary >= minSalary && jobSalary <= maxSalary;
+          let hourlyRate = parseInt(salaryNumbers[0]);
+          
+          // Convert annual salary to hourly (assuming 40 hours/week, 52 weeks/year)
+          if (job.salary.toLowerCase().includes('year') || job.salary.toLowerCase().includes('annual')) {
+            hourlyRate = Math.round(hourlyRate / (40 * 52));
+          }
+          
+          return hourlyRate >= filters.minHourlyRate && hourlyRate <= filters.maxHourlyRate;
         }
         return true; // Include jobs where we can't parse salary
       });
@@ -174,8 +181,9 @@ const AdvancedJobFilter = ({
     const clearedFilters = {
       searchTerm: '',
       jobType: [],
-      location: 'any', // Changed from empty string to 'any'
-      salaryRange: [0, 100000] as [number, number],
+      location: 'any',
+      minHourlyRate: 0,
+      maxHourlyRate: 100,
       datePosted: 'all',
       company: []
     };
@@ -187,7 +195,7 @@ const AdvancedJobFilter = ({
   const activeFilterCount = 
     (filters.jobType.length > 0 ? 1 : 0) +
     (filters.location && filters.location !== 'any' ? 1 : 0) +
-    (filters.salaryRange[0] > 0 || filters.salaryRange[1] < 100000 ? 1 : 0) +
+    (filters.minHourlyRate > 0 || filters.maxHourlyRate < 100 ? 1 : 0) +
     (filters.datePosted !== 'all' ? 1 : 0) +
     (filters.company.length > 0 ? 1 : 0);
 
@@ -300,24 +308,53 @@ const AdvancedJobFilter = ({
               </Select>
             </div>
 
-            {/* Salary Range Filter */}
+            {/* Hourly Rate Filter - Two separate sliders */}
             <div>
               <Label className="text-sm font-medium mb-3 block flex items-center space-x-2">
                 <DollarSign className="h-4 w-4" />
-                <span>Salary Range</span>
+                <span>Hourly Rate Range</span>
               </Label>
-              <div className="space-y-3">
-                <Slider
-                  value={filters.salaryRange}
-                  onValueChange={(value) => setFilters(prev => ({ ...prev, salaryRange: value as [number, number] }))}
-                  max={100000}
-                  min={0}
-                  step={1000}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>${filters.salaryRange[0].toLocaleString()}</span>
-                  <span>${filters.salaryRange[1].toLocaleString()}+</span>
+              <div className="space-y-4">
+                {/* Minimum Hourly Rate Slider */}
+                <div>
+                  <Label className="text-xs text-gray-600 mb-2 block">
+                    Minimum: ${filters.minHourlyRate}/hr
+                  </Label>
+                  <Slider
+                    value={[filters.minHourlyRate]}
+                    onValueChange={(value) => setFilters(prev => ({ 
+                      ...prev, 
+                      minHourlyRate: Math.min(value[0], prev.maxHourlyRate)
+                    }))}
+                    max={100}
+                    min={0}
+                    step={1}
+                    className="w-full"
+                  />
+                </div>
+                
+                {/* Maximum Hourly Rate Slider */}
+                <div>
+                  <Label className="text-xs text-gray-600 mb-2 block">
+                    Maximum: ${filters.maxHourlyRate}/hr
+                  </Label>
+                  <Slider
+                    value={[filters.maxHourlyRate]}
+                    onValueChange={(value) => setFilters(prev => ({ 
+                      ...prev, 
+                      maxHourlyRate: Math.max(value[0], prev.minHourlyRate)
+                    }))}
+                    max={100}
+                    min={0}
+                    step={1}
+                    className="w-full"
+                  />
+                </div>
+                
+                <div className="flex justify-between text-sm text-gray-600 pt-2">
+                  <span>${filters.minHourlyRate}/hr</span>
+                  <span>to</span>
+                  <span>${filters.maxHourlyRate}/hr</span>
                 </div>
               </div>
             </div>
