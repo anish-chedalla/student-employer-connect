@@ -1,12 +1,13 @@
-
 import { useState, useEffect } from 'react';
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { EmployerSidebar } from '../../components/EmployerSidebar';
 import { PostJobs } from '../../components/employer/PostJobs';
 import { MyPostings } from '../../components/employer/MyPostings';
 import { Applications } from '../../components/employer/Applications';
+import MobileEmployerDropdown from '../../components/MobileEmployerDropdown';
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
+import { useIsMobile } from '../../hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from "@/components/ui/card";
 import { Building2, CheckCircle, Clock, Users } from 'lucide-react';
@@ -16,6 +17,7 @@ const EmployerDashboard = () => {
   const { getJobsByEmployer } = useJobs();
   const [activeSection, setActiveSection] = useState('post-jobs');
   const [totalApplications, setTotalApplications] = useState(0);
+  const isMobile = useIsMobile();
 
   const employerJobs = getJobsByEmployer(user?.id || '');
 
@@ -80,6 +82,70 @@ const EmployerDashboard = () => {
         return <PostJobs />;
     }
   };
+
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50">
+        <MobileEmployerDropdown 
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+        />
+        <div className="pt-16 p-4">
+          {/* Section Header */}
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">{getSectionTitle(activeSection)}</h1>
+            <p className="text-sm text-gray-600 mt-1">
+              {activeSection === 'post-jobs' && 'Create and publish new job opportunities'}
+              {activeSection === 'my-postings' && 'Manage your published job postings'}
+              {activeSection === 'applications' && 'Review and manage job applications'}
+            </p>
+          </div>
+
+          {/* Stats Cards - Mobile Layout */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-xs font-medium text-gray-600">Total</p>
+                  <p className="text-lg font-bold text-gray-900">{stats.total}</p>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-xs font-medium text-gray-600">Approved</p>
+                  <p className="text-lg font-bold text-green-600">{stats.approved}</p>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-xs font-medium text-gray-600">Pending</p>
+                  <p className="text-lg font-bold text-yellow-600">{stats.pending}</p>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-xs font-medium text-gray-600">Applications</p>
+                  <p className="text-lg font-bold text-purple-600">{stats.applications}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Content */}
+          {renderContent()}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>

@@ -13,6 +13,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { GraduationCap, Search, MapPin, Clock, DollarSign, Building2, FileText, Send, Calendar, Users, CheckCircle, XCircle } from 'lucide-react';
 import StudentSidebar from '../../components/StudentSidebar';
+import MobileStudentDropdown from '../../components/MobileStudentDropdown';
 import { JobApplicationForm } from '../../components/student/JobApplicationForm';
 import MobileJobSearch from '../../components/student/MobileJobSearch';
 
@@ -391,6 +392,41 @@ const StudentDashboard = () => {
     }
   };
 
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+        <MobileStudentDropdown 
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+        />
+        <div className="pt-16 p-4">
+          {/* Section Header */}
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">
+              {getSectionTitle(activeSection)}
+            </h1>
+            <p className="text-sm text-gray-600 mt-1">{getSectionDescription(activeSection)}</p>
+          </div>
+
+          {/* Main Content */}
+          {renderContent()}
+
+          {/* Job Application Dialog for Mobile */}
+          {selectedJob && (
+            <Dialog open={!!selectedJob} onOpenChange={() => setSelectedJob(null)}>
+              <JobApplicationForm
+                job={selectedJob}
+                onSubmit={handleApply}
+                onCancel={() => setSelectedJob(null)}
+                isSubmitting={isApplying}
+              />
+            </Dialog>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gradient-to-br from-blue-50 via-white to-indigo-50">
@@ -399,10 +435,10 @@ const StudentDashboard = () => {
           onSectionChange={setActiveSection} 
         />
         <SidebarInset>
-          <div className={`${isMobile ? 'p-4' : 'p-6'}`}>
+          <div className="p-6">
             {/* Section Header */}
             <div className="mb-8">
-              <h1 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-gray-900`}>
+              <h1 className="text-3xl font-bold text-gray-900">
                 {getSectionTitle(activeSection)}
               </h1>
               <p className="text-gray-600 mt-2">{getSectionDescription(activeSection)}</p>

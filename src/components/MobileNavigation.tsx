@@ -4,11 +4,9 @@ import { Link } from 'react-router-dom';
 import { GraduationCap, Menu, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 const MobileNavigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const isMobile = useIsMobile();
 
   const navItems = [
     { id: 'home', label: 'Home', href: '#home' },
@@ -19,10 +17,6 @@ const MobileNavigation = () => {
     { id: 'about', label: 'About', href: '#about' }
   ];
 
-  if (!isMobile) {
-    return null; // Let desktop navigation handle non-mobile screens
-  }
-
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200">
       <div className="flex items-center justify-between h-16 px-4">
@@ -32,7 +26,7 @@ const MobileNavigation = () => {
           <span className="text-lg font-bold text-gray-900">SchoolConnect</span>
         </div>
         
-        {/* Mobile Menu - Make the entire right side clickable */}
+        {/* Mobile Menu */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button 
