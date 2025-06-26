@@ -1,11 +1,12 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { GraduationCap } from 'lucide-react';
+import { GraduationCap, ChevronDown } from 'lucide-react';
 
 const StickyNavigation = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isLegalDropdownOpen, setIsLegalDropdownOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -93,6 +94,43 @@ const StickyNavigation = () => {
                 </Link>
               )
             ))}
+            
+            {/* Legal Dropdown */}
+            <div 
+              className="relative"
+              onMouseEnter={() => setIsLegalDropdownOpen(true)}
+              onMouseLeave={() => setIsLegalDropdownOpen(false)}
+            >
+              <button
+                className={`flex items-center text-base font-medium transition-all duration-300 hover:scale-105 ${
+                  isScrolled
+                    ? 'text-gray-700 hover:text-blue-600'
+                    : 'text-white/90 hover:text-white'
+                }`}
+              >
+                Legal
+                <ChevronDown className={`ml-1 h-4 w-4 transition-transform duration-200 ${
+                  isLegalDropdownOpen ? 'rotate-180' : ''
+                }`} />
+              </button>
+              
+              {isLegalDropdownOpen && (
+                <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+                  <Link
+                    to="/legal/terms"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                  >
+                    Terms of Use
+                  </Link>
+                  <Link
+                    to="/legal/privacy"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                  >
+                    Privacy Policy
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

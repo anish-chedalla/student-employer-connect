@@ -13,6 +13,8 @@ import AdminLogin from "./pages/auth/AdminLogin";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import EmployerDashboard from "./pages/employer/EmployerDashboard";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import TermsOfUse from "./pages/legal/TermsOfUse";
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -33,6 +35,10 @@ const App = () => (
               <Route path="/student/login" element={<StudentLogin />} />
               <Route path="/employer/login" element={<EmployerLogin />} />
               <Route path="/admin/login" element={<AdminLogin />} />
+              
+              {/* Legal Routes */}
+              <Route path="/legal/terms" element={<TermsOfUse />} />
+              <Route path="/legal/privacy" element={<PrivacyPolicy />} />
               
               {/* Protected Student Routes */}
               <Route path="/student/dashboard" element={

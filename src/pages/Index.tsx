@@ -7,6 +7,7 @@ import StickyNavigation from "@/components/StickyNavigation";
 import FeatureHighlights from "@/components/FeatureHighlights";
 import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
+
 const Index = () => {
   return <div className="min-h-screen bg-white">
       <StickyNavigation />
@@ -46,22 +47,6 @@ const Index = () => {
                 Post a Job
               </Button>
             </Link>
-          </div>
-
-          {/* Stats with Hover Effects */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center group cursor-pointer p-6 rounded-2xl transition-all duration-300 hover:bg-white/10 hover:backdrop-blur-sm hover:scale-105">
-              <div className="text-4xl md:text-5xl font-bold mb-2 text-blue-400 group-hover:text-blue-300 transition-colors duration-300">500+</div>
-              <div className="text-lg text-gray-300 group-hover:text-white transition-colors duration-300">Active Students</div>
-            </div>
-            <div className="text-center group cursor-pointer p-6 rounded-2xl transition-all duration-300 hover:bg-white/10 hover:backdrop-blur-sm hover:scale-105">
-              <div className="text-4xl md:text-5xl font-bold mb-2 text-green-400 group-hover:text-green-300 transition-colors duration-300">150+</div>
-              <div className="text-lg text-gray-300 group-hover:text-white transition-colors duration-300">Partner Employers</div>
-            </div>
-            <div className="text-center group cursor-pointer p-6 rounded-2xl transition-all duration-300 hover:bg-white/10 hover:backdrop-blur-sm hover:scale-105">
-              <div className="text-4xl md:text-5xl font-bold mb-2 text-purple-400 group-hover:text-purple-300 transition-colors duration-300">200+</div>
-              <div className="text-lg text-gray-300 group-hover:text-white transition-colors duration-300">Successful Placements</div>
-            </div>
           </div>
         </div>
 
