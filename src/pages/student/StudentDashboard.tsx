@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,7 +30,8 @@ const StudentDashboard = () => {
   const filteredJobs = approvedJobs.filter(job =>
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.description.toLowerCase().includes(searchTerm.toLowerCase())
+    job.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    job.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Filter applications by status
