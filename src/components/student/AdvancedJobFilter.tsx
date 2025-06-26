@@ -43,7 +43,7 @@ const AdvancedJobFilter = ({
   const [filters, setFilters] = useState<FilterState>({
     searchTerm: searchTerm,
     jobType: [],
-    location: '',
+    location: 'any', // Changed from empty string to 'any'
     salaryRange: [0, 100000],
     datePosted: 'all',
     company: []
@@ -80,8 +80,8 @@ const AdvancedJobFilter = ({
       filtered = filtered.filter(job => filters.jobType.includes(job.type));
     }
 
-    // Location filter - exact match or contains
-    if (filters.location) {
+    // Location filter - exact match or contains (only if not 'any')
+    if (filters.location && filters.location !== 'any') {
       filtered = filtered.filter(job => 
         job.location.toLowerCase().includes(filters.location.toLowerCase())
       );
@@ -174,7 +174,7 @@ const AdvancedJobFilter = ({
     const clearedFilters = {
       searchTerm: '',
       jobType: [],
-      location: '',
+      location: 'any', // Changed from empty string to 'any'
       salaryRange: [0, 100000] as [number, number],
       datePosted: 'all',
       company: []
@@ -186,7 +186,7 @@ const AdvancedJobFilter = ({
   // Count active filters for display
   const activeFilterCount = 
     (filters.jobType.length > 0 ? 1 : 0) +
-    (filters.location ? 1 : 0) +
+    (filters.location && filters.location !== 'any' ? 1 : 0) +
     (filters.salaryRange[0] > 0 || filters.salaryRange[1] < 100000 ? 1 : 0) +
     (filters.datePosted !== 'all' ? 1 : 0) +
     (filters.company.length > 0 ? 1 : 0);
@@ -290,7 +290,7 @@ const AdvancedJobFilter = ({
                   <SelectValue placeholder="Any location" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Any location</SelectItem>
+                  <SelectItem value="any">Any location</SelectItem>
                   {availableLocations.map(location => (
                     <SelectItem key={location} value={location}>
                       {location}

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -406,11 +405,11 @@ export const PostJobs = () => {
             </Alert>
           )}
 
-          {/* Submit Button with Enhanced Feedback */}
+          {/* Submit Button with Enhanced Feedback - Changed to dark gray */}
           <Button 
             onClick={handleSubmitJob}
             disabled={isSubmitting}
-            className="w-full bg-green-600 hover:bg-green-700 transition-all duration-300 py-3"
+            className="w-full bg-gray-700 hover:bg-gray-800 text-white transition-all duration-300 py-3"
           >
             {isSubmitting ? (
               <div className="flex items-center space-x-2">
