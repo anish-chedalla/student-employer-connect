@@ -22,8 +22,7 @@ interface FilterState {
   searchTerm: string;
   jobType: string[];
   location: string;
-  minHourlyRate: number;
-  maxHourlyRate: number;
+  hourlyRateRange: [number, number];
   datePosted: string;
   company: string[];
 }
@@ -45,8 +44,7 @@ const AdvancedJobFilter = ({
     searchTerm: searchTerm,
     jobType: [],
     location: 'any',
-    minHourlyRate: 0,
-    maxHourlyRate: 100,
+    hourlyRateRange: [0, 100],
     datePosted: 'all',
     company: []
   });
@@ -95,7 +93,7 @@ const AdvancedJobFilter = ({
     }
 
     // Hourly rate filter - extracts numeric values from salary strings and converts to hourly
-    if (filters.minHourlyRate > 0 || filters.maxHourlyRate < 100) {
+    if (filters.hourlyRateRange[0] > 0 || filters.hourlyRateRange[1] < 100) {
       filtered = filtered.filter(job => {
         // Extract numeric values from salary string (handles various formats)
         const salaryNumbers = job.salary.match(/\d+/g);
@@ -107,7 +105,7 @@ const AdvancedJobFilter = ({
             hourlyRate = Math.round(hourlyRate / (40 * 52));
           }
           
-          return hourlyRate >= filters.minHourlyRate && hourlyRate <= filters.maxHourlyRate;
+          return hourlyRate >= filters.hourlyRateRange[0] && hourlyRate <= filters.hourlyRateRange[1];
         }
         return true; // Include jobs where we can't parse salary
       });
@@ -182,8 +180,7 @@ const AdvancedJobFilter = ({
       searchTerm: '',
       jobType: [],
       location: 'any',
-      minHourlyRate: 0,
-      maxHourlyRate: 100,
+      hourlyRateRange: [0, 100] as [number, number],
       datePosted: 'all',
       company: []
     };
@@ -195,7 +192,7 @@ const AdvancedJobFilter = ({
   const activeFilterCount = 
     (filters.jobType.length > 0 ? 1 : 0) +
     (filters.location && filters.location !== 'any' ? 1 : 0) +
-    (filters.minHourlyRate > 0 || filters.maxHourlyRate < 100 ? 1 : 0) +
+    (filters.hourlyRateRange[0] > 0 || filters.hourlyRateRange[1] < 100 ? 1 : 0) +
     (filters.datePosted !== 'all' ? 1 : 0) +
     (filters.company.length > 0 ? 1 : 0);
 
@@ -207,7 +204,7 @@ const AdvancedJobFilter = ({
           <div className="flex items-center space-x-4">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
                 <Input
                   placeholder="Search jobs by title, company, or description..."
                   value={filters.searchTerm}
@@ -258,7 +255,7 @@ const AdvancedJobFilter = ({
           <CardContent className="space-y-6">
             {/* Job Type Filter */}
             <div>
-              <Label className="text-sm font-medium mb-3 block">Job Type</Label>
+              <Label className="text-sm font-medium mb-3 block text-gray-700">Job Type</Label>
               <div className="flex flex-wrap gap-2">
                 {availableJobTypes.map(type => (
                   <div key={type} className="flex items-center space-x-2">
@@ -267,7 +264,7 @@ const AdvancedJobFilter = ({
                       checked={filters.jobType.includes(type)}
                       onCheckedChange={() => toggleJobType(type)}
                     />
-                    <Label htmlFor={`type-${type}`} className="capitalize">
+                    <Label htmlFor={`type-${type}`} className="capitalize text-gray-700 hover:text-gray-900 cursor-pointer">
                       {type.replace('-', ' ')}
                     </Label>
                   </div>
@@ -286,7 +283,7 @@ const AdvancedJobFilter = ({
 
             {/* Location Filter */}
             <div>
-              <Label className="text-sm font-medium mb-3 block flex items-center space-x-2">
+              <Label className="text-sm font-medium mb-3 block flex items-center space-x-2 text-gray-700">
                 <MapPin className="h-4 w-4" />
                 <span>Location</span>
               </Label>
@@ -308,60 +305,36 @@ const AdvancedJobFilter = ({
               </Select>
             </div>
 
-            {/* Hourly Rate Filter - Two separate sliders */}
+            {/* Hourly Rate Range Filter - Single slider with two handles */}
             <div>
-              <Label className="text-sm font-medium mb-3 block flex items-center space-x-2">
+              <Label className="text-sm font-medium mb-3 block flex items-center space-x-2 text-gray-700">
                 <DollarSign className="h-4 w-4" />
                 <span>Hourly Rate Range</span>
               </Label>
               <div className="space-y-4">
-                {/* Minimum Hourly Rate Slider */}
-                <div>
-                  <Label className="text-xs text-gray-600 mb-2 block">
-                    Minimum: ${filters.minHourlyRate}/hr
-                  </Label>
-                  <Slider
-                    value={[filters.minHourlyRate]}
-                    onValueChange={(value) => setFilters(prev => ({ 
-                      ...prev, 
-                      minHourlyRate: Math.min(value[0], prev.maxHourlyRate)
-                    }))}
-                    max={100}
-                    min={0}
-                    step={1}
-                    className="w-full"
-                  />
-                </div>
+                <Slider
+                  value={filters.hourlyRateRange}
+                  onValueChange={(value) => setFilters(prev => ({ 
+                    ...prev, 
+                    hourlyRateRange: value as [number, number]
+                  }))}
+                  max={100}
+                  min={0}
+                  step={1}
+                  className="w-full"
+                />
                 
-                {/* Maximum Hourly Rate Slider */}
-                <div>
-                  <Label className="text-xs text-gray-600 mb-2 block">
-                    Maximum: ${filters.maxHourlyRate}/hr
-                  </Label>
-                  <Slider
-                    value={[filters.maxHourlyRate]}
-                    onValueChange={(value) => setFilters(prev => ({ 
-                      ...prev, 
-                      maxHourlyRate: Math.max(value[0], prev.minHourlyRate)
-                    }))}
-                    max={100}
-                    min={0}
-                    step={1}
-                    className="w-full"
-                  />
-                </div>
-                
-                <div className="flex justify-between text-sm text-gray-600 pt-2">
-                  <span>${filters.minHourlyRate}/hr</span>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>${filters.hourlyRateRange[0]}/hr</span>
                   <span>to</span>
-                  <span>${filters.maxHourlyRate}/hr</span>
+                  <span>${filters.hourlyRateRange[1]}/hr</span>
                 </div>
               </div>
             </div>
 
             {/* Date Posted Filter */}
             <div>
-              <Label className="text-sm font-medium mb-3 block flex items-center space-x-2">
+              <Label className="text-sm font-medium mb-3 block flex items-center space-x-2 text-gray-700">
                 <Calendar className="h-4 w-4" />
                 <span>Date Posted</span>
               </Label>
@@ -383,7 +356,7 @@ const AdvancedJobFilter = ({
 
             {/* Company Filter */}
             <div>
-              <Label className="text-sm font-medium mb-3 block flex items-center space-x-2">
+              <Label className="text-sm font-medium mb-3 block flex items-center space-x-2 text-gray-700">
                 <Building2 className="h-4 w-4" />
                 <span>Company</span>
               </Label>
@@ -395,7 +368,7 @@ const AdvancedJobFilter = ({
                       checked={filters.company.includes(company)}
                       onCheckedChange={() => toggleCompany(company)}
                     />
-                    <Label htmlFor={`company-${company}`} className="text-sm">
+                    <Label htmlFor={`company-${company}`} className="text-sm text-gray-700 hover:text-gray-900 cursor-pointer">
                       {company}
                     </Label>
                   </div>
