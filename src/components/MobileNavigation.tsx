@@ -10,7 +10,7 @@ const MobileNavigation = () => {
 
   const navItems = [
     { id: 'home', label: 'Home', href: '#home' },
-    { id: 'job-postings', label: 'Job Postings', href: '#job-postings' },
+    { id: 'job-postings', label: 'Job Postings', href: '/student/login' },
     { id: 'submit-job', label: 'Submit a Job', href: '/employer/login' },
     { id: 'apply', label: 'Apply', href: '/student/login' },
     { id: 'admin', label: 'Admin', href: '/admin/login' },
