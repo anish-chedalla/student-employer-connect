@@ -1,4 +1,3 @@
-
 import { 
   Search, 
   FileText, 
@@ -30,7 +29,7 @@ export const StudentSidebar: React.FC<StudentSidebarProps> = ({
   activeSection,
   onSectionChange,
 }) => {
-  const { profile, signOut } = useAuth();
+  const { profile, logout } = useAuth();
 
   const menuItems = [
     {
@@ -97,7 +96,7 @@ export const StudentSidebar: React.FC<StudentSidebarProps> = ({
       <SidebarFooter className="border-t border-gray-200 p-4">
         <Button
           variant="ghost"
-          onClick={signOut}
+          onClick={logout}
           className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
         >
           <LogOut className="h-4 w-4 mr-2" />

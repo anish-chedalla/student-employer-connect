@@ -4,9 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { AdvancedJobFilter } from '../../../components/student/AdvancedJobFilter';
+import AdvancedJobFilter from '../../../components/student/AdvancedJobFilter';
 import { JobApplicationForm } from '../../../components/student/JobApplicationFormWithResume';
-import { MobileJobSearch } from '../../../components/student/MobileJobSearch';
+import MobileJobSearch from '../../../components/student/MobileJobSearch';
 import { useJobs } from '../../../contexts/JobContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useIsMobile } from '../../../hooks/use-mobile';
@@ -106,6 +106,7 @@ const JobSearch = () => {
           jobs={jobs}
           onFilteredJobsChange={() => {}}
           searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
         />
       )}
 

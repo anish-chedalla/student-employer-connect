@@ -231,9 +231,9 @@ export const ResumeUpload = () => {
                   className="hidden"
                 />
                 <Button 
-                  as="span" 
                   disabled={uploading}
                   className="cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
                 >
                   {uploading ? 'Uploading...' : 'Choose File'}
                 </Button>
