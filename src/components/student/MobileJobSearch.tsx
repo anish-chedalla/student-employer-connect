@@ -6,15 +6,31 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { JobApplicationForm } from './JobApplicationFormWithResume';
 
 interface MobileJobSearchProps {
+  jobs: any[];
+  onApplyClick: (jobId: string, jobTitle: string) => void;
   searchTerm: string;
   onSearchChange: (term: string) => void;
-  filteredJobs: any[];
-  onJobSelect: (job: any) => void;
+  onApplicationSuccess: () => void;
+  selectedJobId: string | null;
+  selectedJobTitle: string;
+  isApplicationFormOpen: boolean;
+  setIsApplicationFormOpen: (open: boolean) => void;
 }
 
-const MobileJobSearch = ({ searchTerm, onSearchChange, filteredJobs, onJobSelect }: MobileJobSearchProps) => {
+const MobileJobSearch = ({ 
+  jobs, 
+  onApplyClick, 
+  searchTerm, 
+  onSearchChange, 
+  onApplicationSuccess,
+  selectedJobId,
+  selectedJobTitle,
+  isApplicationFormOpen,
+  setIsApplicationFormOpen
+}: MobileJobSearchProps) => {
   const [filterOpen, setFilterOpen] = useState(false);
 
   const formatDate = (dateString: string) => {
@@ -64,12 +80,12 @@ const MobileJobSearch = ({ searchTerm, onSearchChange, filteredJobs, onJobSelect
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold text-gray-900">Available Jobs</h2>
         <Badge variant="secondary">
-          {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'}
+          {jobs.length} {jobs.length === 1 ? 'Job' : 'Jobs'}
         </Badge>
       </div>
 
       {/* Mobile Job Cards */}
-      {filteredJobs.length === 0 ? (
+      {jobs.length === 0 ? (
         <Card>
           <CardContent className="p-8 text-center">
             <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -81,7 +97,7 @@ const MobileJobSearch = ({ searchTerm, onSearchChange, filteredJobs, onJobSelect
         </Card>
       ) : (
         <div className="space-y-4">
-          {filteredJobs.map((job) => (
+          {jobs.map((job) => (
             <Card key={job.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 <div className="space-y-3">
@@ -112,7 +128,7 @@ const MobileJobSearch = ({ searchTerm, onSearchChange, filteredJobs, onJobSelect
 
                   {/* Apply Button */}
                   <Button 
-                    onClick={() => onJobSelect(job)}
+                    onClick={() => onApplyClick(job.id, job.title)}
                     className="w-full bg-blue-600 hover:bg-blue-700"
                     size="lg"
                   >
@@ -123,6 +139,17 @@ const MobileJobSearch = ({ searchTerm, onSearchChange, filteredJobs, onJobSelect
             </Card>
           ))}
         </div>
+      )}
+
+      {/* Application Form Modal */}
+      {selectedJobId && (
+        <JobApplicationForm
+          jobId={selectedJobId}
+          jobTitle={selectedJobTitle}
+          isOpen={isApplicationFormOpen}
+          onClose={() => setIsApplicationFormOpen(false)}
+          onSuccess={onApplicationSuccess}
+        />
       )}
     </div>
   );

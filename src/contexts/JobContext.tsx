@@ -26,6 +26,10 @@ export interface JobApplication {
   resume_url?: string;
   applied_at: string;
   employer_message?: string;
+  // Joined job details
+  job_title?: string;
+  company_name?: string;
+  job_location?: string;
 }
 
 interface JobContextType {
@@ -90,9 +94,17 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (!user) return;
 
     try {
+      // Join applications with jobs to get job details
       const { data, error } = await supabase
         .from('applications')
-        .select('*')
+        .select(`
+          *,
+          jobs (
+            title,
+            company,
+            location
+          )
+        `)
         .eq('student_id', user.id);
 
       if (error) {
@@ -100,10 +112,13 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         return;
       }
 
-      // Type cast the data to ensure proper types
+      // Transform the data to include job details in the application object
       const typedApplications = (data || []).map(app => ({
         ...app,
-        status: app.status as 'pending' | 'reviewed' | 'accepted' | 'rejected'
+        status: app.status as 'pending' | 'reviewed' | 'accepted' | 'rejected',
+        job_title: app.jobs?.title,
+        company_name: app.jobs?.company,
+        job_location: app.jobs?.location
       }));
 
       setApplications(typedApplications);
