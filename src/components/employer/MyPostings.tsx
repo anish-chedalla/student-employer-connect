@@ -1,16 +1,95 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
-import { Building2, Clock, CheckCircle, XCircle, FileText } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { Building2, Clock, CheckCircle, XCircle, FileText, Users, Trash2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
-export const MyPostings = () => {
+interface MyPostingsProps {
+  onViewApplications?: (jobId: string, jobTitle: string) => void;
+}
+
+export const MyPostings = ({ onViewApplications }: MyPostingsProps) => {
   const { user } = useAuth();
-  const { getJobsByEmployer } = useJobs();
+  const { getJobsByEmployer, refreshJobs } = useJobs();
+  const [applicationCounts, setApplicationCounts] = useState<Record<string, number>>({});
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const employerJobs = getJobsByEmployer(user?.id || '');
+
+  useEffect(() => {
+    const fetchApplicationCounts = async () => {
+      if (employerJobs.length === 0) return;
+
+      const jobIds = employerJobs.map(job => job.id);
+      
+      try {
+        const { data, error } = await supabase
+          .from('applications')
+          .select('job_id')
+          .in('job_id', jobIds);
+
+        if (error) {
+          console.error('Error fetching application counts:', error);
+          return;
+        }
+
+        // Count applications per job
+        const counts: Record<string, number> = {};
+        jobIds.forEach(jobId => {
+          counts[jobId] = data?.filter(app => app.job_id === jobId).length || 0;
+        });
+
+        setApplicationCounts(counts);
+      } catch (error) {
+        console.error('Error fetching application counts:', error);
+      }
+    };
+
+    fetchApplicationCounts();
+  }, [employerJobs.length]);
+
+  const handleDeleteJob = async (jobId: string) => {
+    setIsDeleting(jobId);
+    try {
+      const { error } = await supabase
+        .from('jobs')
+        .delete()
+        .eq('id', jobId);
+
+      if (error) {
+        console.error('Error deleting job:', error);
+        toast({
+          title: "Error",
+          description: "Failed to delete job posting",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Job posting deleted successfully",
+      });
+
+      await refreshJobs();
+    } catch (error) {
+      console.error('Error deleting job:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete job posting",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDeleting(null);
+    }
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -92,8 +171,56 @@ export const MyPostings = () => {
                   </div>
                 </div>
 
-                <div className="text-sm text-gray-500">
-                  <span className="font-medium">Posted:</span> {formatDate(job.created_at)}
+                {/* Applications count and actions */}
+                <div className="flex items-center justify-between pt-4 border-t">
+                  <div className="flex items-center space-x-4">
+                    <div className="text-sm text-gray-500">
+                      <span className="font-medium">Posted:</span> {formatDate(job.created_at)}
+                    </div>
+                    
+                    {job.status === 'approved' && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onViewApplications?.(job.id, job.title)}
+                        className="flex items-center space-x-2"
+                      >
+                        <Users className="h-4 w-4" />
+                        <span>{applicationCounts[job.id] || 0} Applications</span>
+                      </Button>
+                    )}
+                  </div>
+
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 border-red-600 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Delete
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Delete Job Posting</DialogTitle>
+                        <DialogDescription>
+                          Are you sure you want to delete "{job.title}"? This action cannot be undone and will also delete all applications for this job.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <DialogFooter>
+                        <Button variant="outline">Cancel</Button>
+                        <Button
+                          variant="destructive"
+                          onClick={() => handleDeleteJob(job.id)}
+                          disabled={isDeleting === job.id}
+                        >
+                          {isDeleting === job.id ? 'Deleting...' : 'Delete Job'}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
 
                 {job.status === 'rejected' && (

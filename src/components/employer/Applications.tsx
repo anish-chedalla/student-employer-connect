@@ -9,7 +9,7 @@ import { ResumePreview } from './ResumePreview';
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, FileText, Mail, Check, X, ChevronDown, ChevronRight } from 'lucide-react';
+import { Users, FileText, Mail, Check, X, ChevronDown, ChevronRight, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Application {
@@ -33,7 +33,13 @@ interface Application {
   };
 }
 
-export const Applications = () => {
+interface ApplicationsProps {
+  selectedJobId?: string;
+  selectedJobTitle?: string;
+  onBackToAllApplications?: () => void;
+}
+
+export const Applications = ({ selectedJobId, selectedJobTitle, onBackToAllApplications }: ApplicationsProps) => {
   const { user } = useAuth();
   const { getJobsByEmployer } = useJobs();
   const [applications, setApplications] = useState<Application[]>([]);
@@ -49,7 +55,7 @@ export const Applications = () => {
   const { toast } = useToast();
 
   const employerJobs = getJobsByEmployer(user?.id || '');
-  const jobIds = employerJobs.map(job => job.id);
+  const jobIds = selectedJobId ? [selectedJobId] : employerJobs.map(job => job.id);
 
   useEffect(() => {
     const fetchApplications = async () => {
@@ -59,7 +65,7 @@ export const Applications = () => {
       }
 
       try {
-        // Get applications for employer's jobs
+        // Get applications for employer's jobs (or specific job if selectedJobId)
         const { data: applicationsData, error: applicationsError } = await supabase
           .from('applications')
           .select(`
@@ -437,12 +443,38 @@ export const Applications = () => {
   if (applications.length === 0) {
     return (
       <div className="space-y-6">
+        {selectedJobId && (
+          <div className="flex items-center space-x-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onBackToAllApplications}
+              className="flex items-center space-x-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back to All Applications</span>
+            </Button>
+          </div>
+        )}
+        
+        <div className="flex items-center space-x-3">
+          <Users className="h-8 w-8 text-green-600" />
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {selectedJobTitle ? `Applications for ${selectedJobTitle}` : 'Applications'}
+            </h1>
+            <p className="text-gray-600">
+              {selectedJobTitle ? 'No applications for this job yet' : 'Applications will appear here once students start applying to your job postings'}
+            </p>
+          </div>
+        </div>
+        
         <Card>
           <CardContent className="p-12 text-center">
             <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No applications yet</h3>
             <p className="text-gray-600">
-              Applications will appear here once students start applying to your job postings
+              {selectedJobTitle ? 'No students have applied to this job yet' : 'Applications will appear here once students start applying to your job postings'}
             </p>
           </CardContent>
         </Card>
@@ -452,6 +484,32 @@ export const Applications = () => {
 
   return (
     <div className="space-y-6">
+      {selectedJobId && (
+        <div className="flex items-center space-x-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onBackToAllApplications}
+            className="flex items-center space-x-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to All Applications</span>
+          </Button>
+        </div>
+      )}
+
+      <div className="flex items-center space-x-3">
+        <Users className="h-8 w-8 text-green-600" />
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {selectedJobTitle ? `Applications for ${selectedJobTitle}` : 'Applications'}
+          </h1>
+          <p className="text-gray-600">
+            {selectedJobTitle ? `Showing ${applications.length} applications for this job` : 'Review and manage job applications'}
+          </p>
+        </div>
+      </div>
+
       {/* Pending Applications */}
       <Collapsible open={openSections.pending} onOpenChange={() => toggleSection('pending')}>
         <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors">

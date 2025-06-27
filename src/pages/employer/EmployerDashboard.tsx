@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { EmployerSidebar } from '../../components/EmployerSidebar';
@@ -17,6 +18,8 @@ const EmployerDashboard = () => {
   const { getJobsByEmployer } = useJobs();
   const [activeSection, setActiveSection] = useState('post-jobs');
   const [totalApplications, setTotalApplications] = useState(0);
+  const [selectedJobId, setSelectedJobId] = useState<string | undefined>();
+  const [selectedJobTitle, setSelectedJobTitle] = useState<string | undefined>();
   const isMobile = useIsMobile();
 
   const employerJobs = getJobsByEmployer(user?.id || '');
@@ -29,7 +32,7 @@ const EmployerDashboard = () => {
       case 'my-postings':
         return 'My Job Postings';
       case 'applications':
-        return 'Applications';
+        return selectedJobTitle ? `Applications for ${selectedJobTitle}` : 'Applications';
       default:
         return 'Dashboard';
     }
@@ -70,14 +73,31 @@ const EmployerDashboard = () => {
     applications: totalApplications
   };
 
+  const handleViewApplications = (jobId: string, jobTitle: string) => {
+    setSelectedJobId(jobId);
+    setSelectedJobTitle(jobTitle);
+    setActiveSection('applications');
+  };
+
+  const handleBackToAllApplications = () => {
+    setSelectedJobId(undefined);
+    setSelectedJobTitle(undefined);
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'post-jobs':
         return <PostJobs />;
       case 'my-postings':
-        return <MyPostings />;
+        return <MyPostings onViewApplications={handleViewApplications} />;
       case 'applications':
-        return <Applications />;
+        return (
+          <Applications 
+            selectedJobId={selectedJobId}
+            selectedJobTitle={selectedJobTitle}
+            onBackToAllApplications={handleBackToAllApplications}
+          />
+        );
       default:
         return <PostJobs />;
     }
