@@ -1,103 +1,91 @@
 
-import { useState } from 'react';
 import { 
-  Sidebar, 
-  SidebarContent, 
-  SidebarGroup, 
-  SidebarGroupContent, 
-  SidebarGroupLabel, 
-  SidebarMenu, 
-  SidebarMenuButton, 
+  Search, 
+  FileText, 
+  Upload,
+  LogOut,
+  GraduationCap
+} from "lucide-react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
-  SidebarFooter
+  SidebarFooter,
 } from "@/components/ui/sidebar";
-import { Send, User, LogOut, Briefcase, CheckCircle, XCircle, Clock } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
 import { Button } from "@/components/ui/button";
+import { useAuth } from '../contexts/AuthContext';
 
 interface StudentSidebarProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
 }
 
-const StudentSidebar = ({ activeSection, onSectionChange }: StudentSidebarProps) => {
-  const { profile, logout } = useAuth();
+export const StudentSidebar: React.FC<StudentSidebarProps> = ({
+  activeSection,
+  onSectionChange,
+}) => {
+  const { profile, signOut } = useAuth();
 
-  const browseItems = [
+  const menuItems = [
     {
-      title: "Job Search",
-      id: "job-search",
-      icon: Briefcase,
-    }
-  ];
-
-  const applicationItems = [
-    {
-      title: "Accepted",
-      id: "accepted-applications",
-      icon: CheckCircle,
+      id: 'job-search',
+      title: 'Job Search',
+      icon: Search,
+      description: 'Find and apply to jobs'
     },
     {
-      title: "Rejected",
-      id: "rejected-applications",
-      icon: XCircle,
+      id: 'my-applications',
+      title: 'My Applications',
+      icon: FileText,
+      description: 'Track application status'
     },
     {
-      title: "Pending",
-      id: "pending-applications",
-      icon: Clock,
+      id: 'resume-upload',
+      title: 'Resume Manager',
+      icon: Upload,
+      description: 'Upload and manage resume'
     }
   ];
 
   return (
     <Sidebar>
-      <SidebarHeader>
-        <div className="flex items-center space-x-2 px-2 py-4">
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-            <User className="h-4 w-4 text-white" />
+      <SidebarHeader className="border-b border-gray-200 p-4">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-blue-100 rounded-lg">
+            <GraduationCap className="h-6 w-6 text-blue-600" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Student</h2>
+            <h2 className="font-semibold text-gray-900">Student Portal</h2>
             <p className="text-sm text-gray-600">{profile?.full_name}</p>
           </div>
         </div>
       </SidebarHeader>
-
+      
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Browse Jobs</SidebarGroupLabel>
+          <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {browseItems.map((item) => (
+              {menuItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton 
-                    onClick={() => onSectionChange(item.id)}
+                  <SidebarMenuButton
                     isActive={activeSection === item.id}
+                    onClick={() => onSectionChange(item.id)}
                     className="w-full justify-start"
                   >
-                    <item.icon className="h-4 w-4 mr-2" />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>My Applications</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {applicationItems.map((item) => (
-                <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton 
-                    onClick={() => onSectionChange(item.id)}
-                    isActive={activeSection === item.id}
-                    className="w-full justify-start"
-                  >
-                    <item.icon className="h-4 w-4 mr-2" />
-                    <span>{item.title}</span>
+                    <item.icon className="h-4 w-4" />
+                    <div className="flex flex-col items-start">
+                      <span>{item.title}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {item.description}
+                      </span>
+                    </div>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -106,22 +94,16 @@ const StudentSidebar = ({ activeSection, onSectionChange }: StudentSidebarProps)
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <Button 
-              variant="ghost" 
-              onClick={logout}
-              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
-          </SidebarMenuItem>
-        </SidebarMenu>
+      <SidebarFooter className="border-t border-gray-200 p-4">
+        <Button
+          variant="ghost"
+          onClick={signOut}
+          className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          Sign Out
+        </Button>
       </SidebarFooter>
     </Sidebar>
   );
 };
-
-export default StudentSidebar;

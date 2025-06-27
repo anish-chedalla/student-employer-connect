@@ -59,6 +59,44 @@ export type Database = {
           },
         ]
       }
+      email_logs: {
+        Row: {
+          application_id: string | null
+          email_type: string
+          id: string
+          recipient_email: string
+          sent_at: string | null
+          status: string | null
+          subject: string
+        }
+        Insert: {
+          application_id?: string | null
+          email_type: string
+          id?: string
+          recipient_email: string
+          sent_at?: string | null
+          status?: string | null
+          subject: string
+        }
+        Update: {
+          application_id?: string | null
+          email_type?: string
+          id?: string
+          recipient_email?: string
+          sent_at?: string | null
+          status?: string | null
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_logs_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jobs: {
         Row: {
           company: string
@@ -108,6 +146,7 @@ export type Database = {
         Row: {
           created_at: string
           email: string
+          email_notifications: boolean | null
           full_name: string
           id: string
           role: string
@@ -118,6 +157,7 @@ export type Database = {
         Insert: {
           created_at?: string
           email: string
+          email_notifications?: boolean | null
           full_name: string
           id: string
           role: string
@@ -128,6 +168,7 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string
+          email_notifications?: boolean | null
           full_name?: string
           id?: string
           role?: string

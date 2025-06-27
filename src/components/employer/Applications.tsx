@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, FileText, Mail, Check, X, MessageSquare, Download, User, Phone } from 'lucide-react';
+import { Users, FileText, Mail, Check, X, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Application {
@@ -165,11 +165,8 @@ export const Applications = () => {
 
       toast({
         title: "Success",
-        description: `Application ${status} successfully`,
+        description: `Application ${status} successfully. Student will be notified via email.`,
       });
-
-      // TODO: Send email notification to student with message
-      console.log(`Sending ${status} notification to student with message: ${message}`);
 
     } catch (error) {
       console.error('Error processing application:', error);
@@ -186,6 +183,15 @@ export const Applications = () => {
   };
 
   const downloadResume = async (resumeUrl: string, applicantName: string) => {
+    if (!resumeUrl) {
+      toast({
+        title: "No Resume",
+        description: "This applicant hasn't uploaded a resume",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       const { data, error } = await supabase.storage
         .from('resumes')
@@ -205,7 +211,7 @@ export const Applications = () => {
       const url = URL.createObjectURL(data);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${applicantName}_Resume.${resumeUrl.split('.').pop()}`;
+      a.download = `${applicantName.replace(/\s+/g, '_')}_Resume.${resumeUrl.split('.').pop()}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -308,9 +314,9 @@ export const Applications = () => {
                     </div>
                   )}
 
-                  {application.resume_url && (
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Resume:</h4>
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Resume:</h4>
+                    {application.resume_url ? (
                       <Button 
                         variant="outline" 
                         size="sm"
@@ -320,8 +326,10 @@ export const Applications = () => {
                         <Download className="h-4 w-4" />
                         <span>Download Resume</span>
                       </Button>
-                    </div>
-                  )}
+                    ) : (
+                      <p className="text-gray-500 text-sm">No resume uploaded</p>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex justify-between items-center mt-6 pt-4 border-t">
