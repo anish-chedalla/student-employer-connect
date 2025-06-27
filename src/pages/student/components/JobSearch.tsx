@@ -89,17 +89,6 @@ const JobSearch = () => {
         </Button>
       </div>
 
-      {/* Search Bar */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-        <Input
-          placeholder="Search jobs by title, company, or location..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
-        />
-      </div>
-
       {/* Advanced Filters */}
       {showFilters && (
         <AdvancedJobFilter
@@ -150,9 +139,9 @@ const JobSearch = () => {
                     </CardDescription>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Badge className={getJobTypeColor(job.type)}>
+                    <div className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getJobTypeColor(job.type)}`}>
                       {job.type.charAt(0).toUpperCase() + job.type.slice(1)}
-                    </Badge>
+                    </div>
                   </div>
                 </div>
               </CardHeader>

@@ -1,3 +1,4 @@
+
 import { 
   Search, 
   FileText, 
@@ -36,19 +37,16 @@ export const StudentSidebar: React.FC<StudentSidebarProps> = ({
       id: 'job-search',
       title: 'Job Search',
       icon: Search,
-      description: 'Find and apply to jobs'
     },
     {
       id: 'my-applications',
       title: 'My Applications',
       icon: FileText,
-      description: 'Track application status'
     },
     {
       id: 'resume-upload',
       title: 'Resume Manager',
       icon: Upload,
-      description: 'Upload and manage resume'
     }
   ];
 
@@ -79,12 +77,7 @@ export const StudentSidebar: React.FC<StudentSidebarProps> = ({
                     className="w-full justify-start"
                   >
                     <item.icon className="h-4 w-4" />
-                    <div className="flex flex-col items-start">
-                      <span>{item.title}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {item.description}
-                      </span>
-                    </div>
+                    <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

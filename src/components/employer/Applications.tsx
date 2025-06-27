@@ -4,10 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ResumePreview } from './ResumePreview';
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, FileText, Mail, Check, X, Download } from 'lucide-react';
+import { Users, FileText, Mail, Check, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Application {
@@ -317,15 +318,11 @@ export const Applications = () => {
                   <div>
                     <h4 className="font-medium text-gray-900 mb-2">Resume:</h4>
                     {application.resume_url ? (
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => downloadResume(application.resume_url!, application.applicant_name || application.student.full_name)}
-                        className="flex items-center space-x-2"
-                      >
-                        <Download className="h-4 w-4" />
-                        <span>Download Resume</span>
-                      </Button>
+                      <ResumePreview
+                        resumeUrl={application.resume_url}
+                        applicantName={application.applicant_name || application.student.full_name}
+                        onDownload={() => downloadResume(application.resume_url!, application.applicant_name || application.student.full_name)}
+                      />
                     ) : (
                       <p className="text-gray-500 text-sm">No resume uploaded</p>
                     )}
