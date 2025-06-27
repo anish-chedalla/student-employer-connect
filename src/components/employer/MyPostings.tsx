@@ -19,6 +19,7 @@ export const MyPostings = ({ onViewApplications }: MyPostingsProps) => {
   const { getJobsByEmployer, refreshJobs } = useJobs();
   const [applicationCounts, setApplicationCounts] = useState<Record<string, number>>({});
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState<string | null>(null);
   const { toast } = useToast();
 
   const employerJobs = getJobsByEmployer(user?.id || '');
@@ -78,6 +79,8 @@ export const MyPostings = ({ onViewApplications }: MyPostingsProps) => {
         description: "Job posting deleted successfully",
       });
 
+      // Close the dialog and refresh jobs
+      setDialogOpen(null);
       await refreshJobs();
     } catch (error) {
       console.error('Error deleting job:', error);
@@ -149,10 +152,10 @@ export const MyPostings = ({ onViewApplications }: MyPostingsProps) => {
                     <p className="text-gray-600 line-clamp-2">{job.description}</p>
                   </div>
                   <div className="ml-4 flex flex-col space-y-2">
-                    <Badge className={`${getStatusColor(job.status)} flex items-center space-x-1`}>
+                    <div className={`${getStatusColor(job.status)} flex items-center space-x-1 inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 pointer-events-none`}>
                       {getStatusIcon(job.status)}
                       <span className="capitalize">{job.status}</span>
-                    </Badge>
+                    </div>
                   </div>
                 </div>
 
@@ -191,7 +194,7 @@ export const MyPostings = ({ onViewApplications }: MyPostingsProps) => {
                     )}
                   </div>
 
-                  <Dialog>
+                  <Dialog open={dialogOpen === job.id} onOpenChange={(open) => setDialogOpen(open ? job.id : null)}>
                     <DialogTrigger asChild>
                       <Button
                         variant="outline"
@@ -210,7 +213,7 @@ export const MyPostings = ({ onViewApplications }: MyPostingsProps) => {
                         </DialogDescription>
                       </DialogHeader>
                       <DialogFooter>
-                        <Button variant="outline">Cancel</Button>
+                        <Button variant="outline" onClick={() => setDialogOpen(null)}>Cancel</Button>
                         <Button
                           variant="destructive"
                           onClick={() => handleDeleteJob(job.id)}
