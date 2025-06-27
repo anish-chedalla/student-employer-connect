@@ -94,12 +94,12 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (!user) return;
 
     try {
-      // Join applications with jobs to get job details
+      // Join applications with jobs to get job details - specify the relationship explicitly
       const { data, error } = await supabase
         .from('applications')
         .select(`
           *,
-          jobs (
+          jobs!applications_job_id_fkey (
             title,
             company,
             location
