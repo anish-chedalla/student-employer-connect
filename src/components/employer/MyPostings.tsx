@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -82,6 +81,16 @@ export const MyPostings = ({ onViewApplications }: MyPostingsProps) => {
       // Close the dialog and refresh jobs
       setDialogOpen(null);
       await refreshJobs();
+      
+      // Also refresh application counts after successful deletion
+      setTimeout(() => {
+        setApplicationCounts(prev => {
+          const updated = { ...prev };
+          delete updated[jobId];
+          return updated;
+        });
+      }, 100);
+      
     } catch (error) {
       console.error('Error deleting job:', error);
       toast({
