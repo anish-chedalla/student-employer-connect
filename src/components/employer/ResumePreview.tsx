@@ -1,10 +1,9 @@
 
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, Download, X } from 'lucide-react';
+import { Eye, Download } from 'lucide-react';
 
 interface ResumePreviewProps {
   resumeUrl: string;
@@ -17,8 +16,6 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
   applicantName,
   onDownload
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -48,10 +45,23 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
         return;
       }
 
-      // Create a blob URL for preview
+      // Create a blob URL and open in new tab
       const url = URL.createObjectURL(data);
-      setPreviewUrl(url);
-      setIsOpen(true);
+      const newWindow = window.open(url, '_blank');
+      
+      if (!newWindow) {
+        toast({
+          title: "Preview Blocked",
+          description: "Please allow popups for this site to preview resumes",
+          variant: "destructive"
+        });
+      }
+
+      // Clean up the blob URL after a short delay
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 1000);
+
     } catch (error) {
       console.error('Error previewing resume:', error);
       toast({
@@ -64,59 +74,27 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({
     }
   };
 
-  const handleClose = () => {
-    setIsOpen(false);
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-      setPreviewUrl(null);
-    }
-  };
-
   return (
-    <>
-      <div className="flex space-x-2">
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={handlePreview}
-          disabled={isLoading}
-          className="flex items-center space-x-2"
-        >
-          <Eye className="h-4 w-4" />
-          <span>{isLoading ? 'Loading...' : 'Preview'}</span>
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={onDownload}
-          className="flex items-center space-x-2"
-        >
-          <Download className="h-4 w-4" />
-          <span>Download</span>
-        </Button>
-      </div>
-
-      <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="max-w-4xl max-h-[90vh]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
-              <span>{applicantName}'s Resume</span>
-              <Button variant="ghost" size="sm" onClick={handleClose}>
-                <X className="h-4 w-4" />
-              </Button>
-            </DialogTitle>
-          </DialogHeader>
-          <div className="flex-1 overflow-auto">
-            {previewUrl && (
-              <iframe
-                src={previewUrl}
-                className="w-full h-[70vh] border rounded-lg"
-                title={`${applicantName}'s Resume`}
-              />
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+    <div className="flex space-x-2">
+      <Button 
+        variant="outline" 
+        size="sm"
+        onClick={handlePreview}
+        disabled={isLoading}
+        className="flex items-center space-x-2"
+      >
+        <Eye className="h-4 w-4" />
+        <span>{isLoading ? 'Loading...' : 'Preview'}</span>
+      </Button>
+      <Button 
+        variant="outline" 
+        size="sm"
+        onClick={onDownload}
+        className="flex items-center space-x-2"
+      >
+        <Download className="h-4 w-4" />
+        <span>Download</span>
+      </Button>
+    </div>
   );
 };

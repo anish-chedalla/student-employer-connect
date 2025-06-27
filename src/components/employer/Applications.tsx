@@ -4,11 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ResumePreview } from './ResumePreview';
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, FileText, Mail, Check, X } from 'lucide-react';
+import { Users, FileText, Mail, Check, X, ChevronDown, ChevronRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Application {
@@ -40,6 +41,11 @@ export const Applications = () => {
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [message, setMessage] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    pending: true,
+    accepted: false,
+    rejected: false
+  });
   const { toast } = useToast();
 
   const employerJobs = getJobsByEmployer(user?.id || '');
@@ -250,6 +256,170 @@ export const Applications = () => {
     }
   };
 
+  const toggleSection = (status: string) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [status]: !prev[status]
+    }));
+  };
+
+  const getApplicationsByStatus = (status: string) => {
+    return applications.filter(app => app.status === status);
+  };
+
+  const renderApplicationCard = (application: Application) => (
+    <Card key={application.id} className="hover:shadow-md transition-shadow">
+      <CardContent className="p-6">
+        <div className="flex justify-between items-start mb-4">
+          <div className="flex-1">
+            <h3 className="text-xl font-semibold text-gray-900 mb-1">
+              {application.applicant_name || application.student.full_name}
+            </h3>
+            <p className="text-lg text-gray-700 mb-2">Applied for: {application.job.title}</p>
+            <div className="flex items-center text-gray-600 mb-2">
+              <Mail className="h-4 w-4 mr-1" />
+              <span>{application.applicant_email || application.student.email}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Enhanced Application Details */}
+        <div className="space-y-4">
+          {application.cover_letter && (
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2">Cover Letter:</h4>
+              <p className="text-gray-700 bg-gray-50 p-3 rounded-lg">{application.cover_letter}</p>
+            </div>
+          )}
+
+          {application.additional_comments && (
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2">Additional Comments:</h4>
+              <p className="text-gray-700 bg-gray-50 p-3 rounded-lg">{application.additional_comments}</p>
+            </div>
+          )}
+
+          <div>
+            <h4 className="font-medium text-gray-900 mb-2">Resume:</h4>
+            {application.resume_url ? (
+              <ResumePreview
+                resumeUrl={application.resume_url}
+                applicantName={application.applicant_name || application.student.full_name}
+                onDownload={() => downloadResume(application.resume_url!, application.applicant_name || application.student.full_name)}
+              />
+            ) : (
+              <p className="text-gray-500 text-sm">No resume uploaded</p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center mt-6 pt-4 border-t">
+          <div className="text-sm text-gray-500">
+            <span className="font-medium">Applied:</span> {formatDate(application.applied_at)}
+          </div>
+          
+          {application.status === 'pending' && (
+            <div className="flex space-x-2">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="text-green-600 border-green-600 hover:bg-green-50"
+                    onClick={() => setSelectedApplication(application)}
+                  >
+                    <Check className="h-4 w-4 mr-1" />
+                    Accept
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Accept Application</DialogTitle>
+                    <DialogDescription>
+                      You are about to accept {application.applicant_name || application.student.full_name}'s application for {application.job.title}.
+                      Write a message to the applicant:
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Textarea
+                    placeholder="Congratulations! We're pleased to inform you that your application has been accepted..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="min-h-[100px]"
+                  />
+                  <DialogFooter>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        setSelectedApplication(null);
+                        setMessage('');
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={() => handleApplicationAction(application.id, 'accepted', message)}
+                      disabled={isProcessing}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      {isProcessing ? 'Processing...' : 'Accept Application'}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="text-red-600 border-red-600 hover:bg-red-50"
+                    onClick={() => setSelectedApplication(application)}
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Decline
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Decline Application</DialogTitle>
+                    <DialogDescription>
+                      You are about to decline {application.applicant_name || application.student.full_name}'s application for {application.job.title}.
+                      Write a message to the applicant:
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Textarea
+                    placeholder="Thank you for your interest in this position. Unfortunately, we have decided to move forward with other candidates..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="min-h-[100px]"
+                  />
+                  <DialogFooter>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        setSelectedApplication(null);
+                        setMessage('');
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={() => handleApplicationAction(application.id, 'rejected', message)}
+                      disabled={isProcessing}
+                      variant="destructive"
+                    >
+                      {isProcessing ? 'Processing...' : 'Decline Application'}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -264,9 +434,9 @@ export const Applications = () => {
     );
   }
 
-  return (
-    <div className="space-y-6">
-      {applications.length === 0 ? (
+  if (applications.length === 0) {
+    return (
+      <div className="space-y-6">
         <Card>
           <CardContent className="p-12 text-center">
             <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -276,167 +446,71 @@ export const Applications = () => {
             </p>
           </CardContent>
         </Card>
-      ) : (
-        <div className="space-y-4">
-          {applications.map((application) => (
-            <Card key={application.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                      {application.applicant_name || application.student.full_name}
-                    </h3>
-                    <p className="text-lg text-gray-700 mb-2">Applied for: {application.job.title}</p>
-                    <div className="flex items-center text-gray-600 mb-2">
-                      <Mail className="h-4 w-4 mr-1" />
-                      <span>{application.applicant_email || application.student.email}</span>
-                    </div>
-                  </div>
-                  <div className="ml-4 flex items-center space-x-2">
-                    <Badge className={`${getStatusColor(application.status)} flex items-center space-x-1`}>
-                      <span className="capitalize">{application.status}</span>
-                    </Badge>
-                  </div>
-                </div>
+      </div>
+    );
+  }
 
-                {/* Enhanced Application Details */}
-                <div className="space-y-4">
-                  {application.cover_letter && (
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Cover Letter:</h4>
-                      <p className="text-gray-700 bg-gray-50 p-3 rounded-lg">{application.cover_letter}</p>
-                    </div>
-                  )}
+  return (
+    <div className="space-y-6">
+      {/* Pending Applications */}
+      <Collapsible open={openSections.pending} onOpenChange={() => toggleSection('pending')}>
+        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors">
+          <div className="flex items-center space-x-3">
+            <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+              Pending ({getApplicationsByStatus('pending').length})
+            </Badge>
+            <h2 className="text-xl font-semibold text-gray-900">Pending Applications</h2>
+          </div>
+          {openSections.pending ? (
+            <ChevronDown className="h-5 w-5 text-gray-600" />
+          ) : (
+            <ChevronRight className="h-5 w-5 text-gray-600" />
+          )}
+        </CollapsibleTrigger>
+        <CollapsibleContent className="space-y-4 mt-4">
+          {getApplicationsByStatus('pending').map(renderApplicationCard)}
+        </CollapsibleContent>
+      </Collapsible>
 
-                  {application.additional_comments && (
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Additional Comments:</h4>
-                      <p className="text-gray-700 bg-gray-50 p-3 rounded-lg">{application.additional_comments}</p>
-                    </div>
-                  )}
+      {/* Accepted Applications */}
+      <Collapsible open={openSections.accepted} onOpenChange={() => toggleSection('accepted')}>
+        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+          <div className="flex items-center space-x-3">
+            <Badge className="bg-green-100 text-green-800 border-green-200">
+              Accepted ({getApplicationsByStatus('accepted').length})
+            </Badge>
+            <h2 className="text-xl font-semibold text-gray-900">Accepted Applications</h2>
+          </div>
+          {openSections.accepted ? (
+            <ChevronDown className="h-5 w-5 text-gray-600" />
+          ) : (
+            <ChevronRight className="h-5 w-5 text-gray-600" />
+          )}
+        </CollapsibleTrigger>
+        <CollapsibleContent className="space-y-4 mt-4">
+          {getApplicationsByStatus('accepted').map(renderApplicationCard)}
+        </CollapsibleContent>
+      </Collapsible>
 
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Resume:</h4>
-                    {application.resume_url ? (
-                      <ResumePreview
-                        resumeUrl={application.resume_url}
-                        applicantName={application.applicant_name || application.student.full_name}
-                        onDownload={() => downloadResume(application.resume_url!, application.applicant_name || application.student.full_name)}
-                      />
-                    ) : (
-                      <p className="text-gray-500 text-sm">No resume uploaded</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center mt-6 pt-4 border-t">
-                  <div className="text-sm text-gray-500">
-                    <span className="font-medium">Applied:</span> {formatDate(application.applied_at)}
-                  </div>
-                  
-                  {application.status === 'pending' && (
-                    <div className="flex space-x-2">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            className="text-green-600 border-green-600 hover:bg-green-50"
-                            onClick={() => setSelectedApplication(application)}
-                          >
-                            <Check className="h-4 w-4 mr-1" />
-                            Accept
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Accept Application</DialogTitle>
-                            <DialogDescription>
-                              You are about to accept {application.applicant_name || application.student.full_name}'s application for {application.job.title}.
-                              Write a message to the applicant:
-                            </DialogDescription>
-                          </DialogHeader>
-                          <Textarea
-                            placeholder="Congratulations! We're pleased to inform you that your application has been accepted..."
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            className="min-h-[100px]"
-                          />
-                          <DialogFooter>
-                            <Button 
-                              variant="outline" 
-                              onClick={() => {
-                                setSelectedApplication(null);
-                                setMessage('');
-                              }}
-                            >
-                              Cancel
-                            </Button>
-                            <Button 
-                              onClick={() => handleApplicationAction(application.id, 'accepted', message)}
-                              disabled={isProcessing}
-                              className="bg-green-600 hover:bg-green-700"
-                            >
-                              {isProcessing ? 'Processing...' : 'Accept Application'}
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            className="text-red-600 border-red-600 hover:bg-red-50"
-                            onClick={() => setSelectedApplication(application)}
-                          >
-                            <X className="h-4 w-4 mr-1" />
-                            Decline
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Decline Application</DialogTitle>
-                            <DialogDescription>
-                              You are about to decline {application.applicant_name || application.student.full_name}'s application for {application.job.title}.
-                              Write a message to the applicant:
-                            </DialogDescription>
-                          </DialogHeader>
-                          <Textarea
-                            placeholder="Thank you for your interest in this position. Unfortunately, we have decided to move forward with other candidates..."
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            className="min-h-[100px]"
-                          />
-                          <DialogFooter>
-                            <Button 
-                              variant="outline" 
-                              onClick={() => {
-                                setSelectedApplication(null);
-                                setMessage('');
-                              }}
-                            >
-                              Cancel
-                            </Button>
-                            <Button 
-                              onClick={() => handleApplicationAction(application.id, 'rejected', message)}
-                              disabled={isProcessing}
-                              variant="destructive"
-                            >
-                              {isProcessing ? 'Processing...' : 'Decline Application'}
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+      {/* Rejected Applications */}
+      <Collapsible open={openSections.rejected} onOpenChange={() => toggleSection('rejected')}>
+        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+          <div className="flex items-center space-x-3">
+            <Badge className="bg-red-100 text-red-800 border-red-200">
+              Rejected ({getApplicationsByStatus('rejected').length})
+            </Badge>
+            <h2 className="text-xl font-semibold text-gray-900">Rejected Applications</h2>
+          </div>
+          {openSections.rejected ? (
+            <ChevronDown className="h-5 w-5 text-gray-600" />
+          ) : (
+            <ChevronRight className="h-5 w-5 text-gray-600" />
+          )}
+        </CollapsibleTrigger>
+        <CollapsibleContent className="space-y-4 mt-4">
+          {getApplicationsByStatus('rejected').map(renderApplicationCard)}
+        </CollapsibleContent>
+      </Collapsible>
     </div>
   );
 };
