@@ -37,7 +37,7 @@ const Index = () => {
               </span>
             </h1>
             <p className="text-xl md:text-2xl mb-12 text-gray-200 max-w-3xl mx-auto leading-relaxed font-light">
-              Explore, connect, and apply—right here at PVHS
+              Discover career opportunities, build real-world connections, and take the next step toward your future—all through Paradise Valley Pathways at PVHS.
             </p>
             
             {/* Enhanced CTA Buttons with Hover Effects */}
