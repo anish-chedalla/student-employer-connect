@@ -7,7 +7,7 @@ const Testimonials = () => {
     {
       name: 'Sarah Chen',
       role: 'High School Senior',
-      quote: 'SchoolConnect helped me find my first part-time job at a local marketing firm. The application process was so simple and the guidance counselors were incredibly supportive throughout.',
+      quote: 'PV Pathways helped me find my first part-time job at a local marketing firm. The application process was so simple and the guidance counselors were incredibly supportive throughout.',
       avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=150&h=150&fit=crop&crop=face'
     },
     {
@@ -32,7 +32,7 @@ const Testimonials = () => {
             What Our Community Says
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Hear from students and employers who have found success through SchoolConnect
+            Hear from students and employers who have found success through PV Pathways
           </p>
         </div>
 
