@@ -1,73 +1,49 @@
-# Welcome to your Lovable project
+# Paradise Valley Pathways
 
-## Project info
+Paradise Valley Pathways is a student-employer job connection platform developed for the 2024–25 FBLA Website Coding & Development competition. The website is designed to help students at Paradise Valley High School easily discover and apply for job opportunities, while allowing employers to post openings and connect with qualified student applicants.
 
-**URL**: https://lovable.dev/projects/590c0286-5ee2-4a35-a7f0-9db8f5079056
+## Features
 
-## How can I edit this code?
+- **Employer Job Submission**  
+  Employers can submit job postings through a simple and secure online form.
 
-There are several ways of editing your application.
+- **Admin Approval Dashboard**  
+  A backend panel allows administrators to approve or delete job postings before they appear publicly.
 
-**Use Lovable**
+- **Student Job Board**  
+  Students can browse approved job postings in a clean and easy-to-navigate interface.
+- **Application Portal**  
+  Students can apply directly to job opportunities using a streamlined form.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/590c0286-5ee2-4a35-a7f0-9db8f5079056) and start prompting.
+- **Responsive Design**  
+  Optimized for mobile phones, tablets, and desktop devices.
+##  Purpose
 
-Changes made via Lovable will be committed automatically to this repo.
+This project was created in response to the FBLA 2024–25 Website Coding & Development prompt:
+> *"Create a website for your school’s guidance department so students can easily search job postings and employers can easily submit them."*
 
-**Use your preferred IDE**
+##  Technologies Used
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- React: JavaScript library used to build fast, dynamic user interfaces for the web.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Tailwind CSS: Utility-first CSS framework used to design responsive and modern interfaces quickly.
 
-Follow these steps:
+- Supabase: Backend-as-a-service providing authentication, database (PostgreSQL), and storage for managing user data and job applications.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- VS Code: Code editor used for writing, debugging, and managing project files.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- GitHub: Platform for version control and collaboration, used to track changes and host your codebase.
+## 📣 Sample Tagline
 
-# Step 3: Install the necessary dependencies.
-npm i
+> *"Discover career opportunities, connect with employers, and apply with confidence—all through Paradise Valley Pathways at PVHS."*
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## 👥 Team
 
-**Edit a file directly in GitHub**
+- Anish Chedalla  
+*Paradise Valley High School*  
+*FBLA Member – 2024–25*
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- Adhyyan Ranjan  
+*Paradise Valley High School*  
+*FBLA Member – 2024–25*
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/590c0286-5ee2-4a35-a7f0-9db8f5079056) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
