@@ -22,7 +22,7 @@ const MobileNavigation = () => {
         {/* Logo */}
         <div className="flex items-center space-x-3">
           <GraduationCap className="h-6 w-6 text-blue-600" />
-          <span className="text-lg font-bold text-gray-900">SchoolConnect</span>
+          <span className="text-lg font-bold text-gray-900">PV Pathways</span>
         </div>
         
         {/* Mobile Menu */}
@@ -41,7 +41,7 @@ const MobileNavigation = () => {
             <div className="flex flex-col space-y-4 mt-8">
               <div className="flex items-center space-x-3 mb-8">
                 <GraduationCap className="h-8 w-8 text-blue-600" />
-                <span className="text-xl font-bold text-gray-900">SchoolConnect</span>
+                <span className="text-xl font-bold text-gray-900">Paradise Valley Pathways</span>
               </div>
               
               {navItems.map((item) => (

@@ -64,7 +64,7 @@ const StickyNavigation = () => {
             <span className={`text-lg font-bold transition-colors duration-300 ${
               isScrolled ? 'text-gray-900' : 'text-white'
             }`}>
-              SchoolConnect
+              PV Pathways
             </span>
           </div>
           

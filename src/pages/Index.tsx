@@ -9,7 +9,7 @@ import FeatureHighlights from "@/components/FeatureHighlights";
 import Testimonials from "@/components/Testimonials";
 
 /**
- * Index (Home) Page - Main landing page for the SchoolConnect platform
+ * Index (Home) Page - Main landing page for the Paradise Valley Pathways platform
  * Features: Hero section, how-it-works explanation, portal access cards,
  * feature highlights, testimonials, and about section
  * Enhanced with animations and improved visual hierarchy
@@ -68,7 +68,7 @@ const Index = () => {
         <section className="py-20 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16 animate-fade-in">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">How SchoolConnect Works</h2>
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">How Paradise Valley Pathways Works</h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">Simple steps to connect students with meaningful career opportunities</p>
             </div>
 
@@ -303,7 +303,7 @@ const Index = () => {
         <section id="about" className="py-20 bg-gray-900 text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16 animate-fade-in">
-              <h2 className="text-4xl font-bold mb-4">About SchoolConnect</h2>
+              <h2 className="text-4xl font-bold mb-4">About Paradise Valley Pathways</h2>
               <p className="text-xl text-gray-300 max-w-2xl mx-auto">
                 Built specifically for our school's guidance department to bridge the gap between education and employment
               </p>
@@ -313,7 +313,7 @@ const Index = () => {
               <div>
                 <h3 className="text-2xl font-bold mb-6">Our Mission</h3>
                 <p className="text-gray-300 text-lg leading-relaxed mb-6">
-                  SchoolConnect was created to solve a simple problem: connecting talented students with meaningful 
+                  Paradise Valley Pathways was created to solve a simple problem: connecting talented students with meaningful 
                   employment opportunities in their local community. We believe that every student deserves a chance 
                   to gain real-world experience and launch their career.
                 </p>

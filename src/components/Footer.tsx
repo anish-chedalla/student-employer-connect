@@ -12,7 +12,7 @@ const Footer = () => {
             <div className="flex items-center space-x-3 mb-4">
               <GraduationCap className="h-8 w-8 text-blue-400" />
               <div>
-                <h3 className="text-xl font-bold">SchoolConnect</h3>
+                <h3 className="text-xl font-bold">Paradise Valley Pathways</h3>
                 <p className="text-sm text-gray-400">Career Services Portal</p>
               </div>
             </div>
@@ -62,7 +62,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-          <p className="text-gray-400 text-sm">© 2025 SchoolConnect Career Services Portal. All rights reserved.</p>
+          <p className="text-gray-400 text-sm">© 2025 Paradise Valley Pathways Career Services Portal. All rights reserved.</p>
         </div>
       </div>
     </footer>

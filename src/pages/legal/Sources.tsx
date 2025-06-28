@@ -11,7 +11,7 @@ const Sources = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center space-x-3 mb-4">
             <GraduationCap className="h-8 w-8" />
-            <span className="text-2xl font-bold">SchoolConnect</span>
+            <span className="text-2xl font-bold">Paradise Valley Pathways</span>
           </div>
           <h1 className="text-4xl font-bold">Sources</h1>
           <p className="text-purple-100 mt-2">References and attributions used in this project</p>
