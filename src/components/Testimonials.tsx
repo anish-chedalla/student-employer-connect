@@ -5,19 +5,19 @@ import { Badge } from '@/components/ui/badge';
 const Testimonials = () => {
   const testimonials = [
     {
-      name: 'Sarah Chen',
+      name: 'Rahul Moorjani',
       role: 'High School Senior',
       quote: 'PV Pathways helped me find my first part-time job at a local marketing firm. The application process was so simple and the guidance counselors were incredibly supportive throughout.',
       avatar: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=150&h=150&fit=crop&crop=face'
     },
     {
-      name: 'Michael Rodriguez',
+      name: 'Mr. Troxel',
       role: 'Local Business Owner',
       quote: 'As a small business owner, finding reliable student workers used to be challenging. This platform connects us with motivated students who are eager to learn and contribute.',
       avatar: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=150&h=150&fit=crop&crop=face'
     },
     {
-      name: 'Emma Thompson',
+      name: 'Shreyas Damera',
       role: 'Junior Student',
       quote: 'I love how easy it is to track my applications and see new job postings. The mobile app works perfectly and I can apply on the go between classes.',
       avatar: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=150&h=150&fit=crop&crop=face'
