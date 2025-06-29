@@ -1,6 +1,6 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface UserProfile {
@@ -61,27 +61,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Function to handle redirects based on user role
   const handleRoleBasedRedirect = (userProfile: UserProfile) => {
     // Only redirect if we're not already on the correct page
-    const currentPath = window.location.hash.replace('#', '') || '/';
+    const currentPath = window.location.pathname;
     
     switch (userProfile.role) {
       case 'admin':
         if (!currentPath.startsWith('/admin')) {
-          window.location.hash = '#/admin/dashboard';
+          window.location.href = '/admin/dashboard';
         }
         break;
       case 'employer':
         if (!currentPath.startsWith('/employer')) {
-          window.location.hash = '#/employer/dashboard';
+          window.location.href = '/employer/dashboard';
         }
         break;
       case 'student':
         if (!currentPath.startsWith('/student')) {
-          window.location.hash = '#/student/dashboard';
+          window.location.href = '/student/dashboard';
         }
         break;
       default:
         if (currentPath !== '/') {
-          window.location.hash = '#/';
+          window.location.href = '/';
         }
     }
   };
@@ -228,8 +228,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setSession(null);
       setIsLoading(false);
       
-      // Use hash routing for GitHub Pages compatibility
-      window.location.hash = '#/';
+      // Redirect to home page
+      window.location.href = '/';
       
       console.log('Logout successful');
     } catch (error) {
