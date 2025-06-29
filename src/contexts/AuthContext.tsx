@@ -61,27 +61,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Function to handle redirects based on user role
   const handleRoleBasedRedirect = (userProfile: UserProfile) => {
     // Only redirect if we're not already on the correct page
-    const currentPath = window.location.pathname;
+    const currentPath = window.location.hash.replace('#/', '');
     
     switch (userProfile.role) {
       case 'admin':
-        if (!currentPath.startsWith('/admin')) {
-          window.location.href = '/admin/dashboard';
+        if (!currentPath.startsWith('admin')) {
+          window.location.hash = '#/admin/dashboard';
         }
         break;
       case 'employer':
-        if (!currentPath.startsWith('/employer')) {
-          window.location.href = '/employer/dashboard';
+        if (!currentPath.startsWith('employer')) {
+          window.location.hash = '#/employer/dashboard';
         }
         break;
       case 'student':
-        if (!currentPath.startsWith('/student')) {
-          window.location.href = '/student/dashboard';
+        if (!currentPath.startsWith('student')) {
+          window.location.hash = '#/student/dashboard';
         }
         break;
       default:
-        if (currentPath !== '/') {
-          window.location.href = '/';
+        if (currentPath !== '') {
+          window.location.hash = '#/';
         }
     }
   };
@@ -194,7 +194,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             full_name: fullName,
             role: role,
           },
-          emailRedirectTo: `${window.location.origin}/`,
+          emailRedirectTo: `${window.location.origin}/#/`,
         },
       });
 
@@ -228,8 +228,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setSession(null);
       setIsLoading(false);
       
-      // Redirect to home page
-      window.location.href = '/';
+      // Use hash-based navigation for GitHub Pages compatibility
+      window.location.hash = '#/';
       
       console.log('Logout successful');
     } catch (error) {
