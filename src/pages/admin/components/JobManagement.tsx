@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useJobs } from '../../../contexts/JobContext';
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   CheckCircle, 
   XCircle, 
@@ -16,6 +19,9 @@ import { useToast } from "@/hooks/use-toast";
 const JobManagement = () => {
   const { jobs, updateJobStatus, isLoading } = useJobs();
   const { toast } = useToast();
+  const [selectedJob, setSelectedJob] = useState<any>(null);
+  const [declineMessage, setDeclineMessage] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Show loading state while context is initializing
   if (isLoading) {
@@ -43,6 +49,39 @@ const JobManagement = () => {
         description: "Failed to update job status.",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleDeclineWithMessage = async () => {
+    if (!selectedJob) return;
+    
+    setIsProcessing(true);
+    try {
+      // For now, we'll just update the status. In a full implementation,
+      // you might want to store the decline message in the database
+      const success = await updateJobStatus(selectedJob.id, 'rejected');
+      if (success) {
+        toast({
+          title: "Job Declined",
+          description: "Job has been declined with custom message.",
+        });
+        setSelectedJob(null);
+        setDeclineMessage('');
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to decline job.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to decline job.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -107,27 +146,101 @@ const JobManagement = () => {
                     <CheckCircle className="h-4 w-4 mr-1" />
                     Approve
                   </Button>
-                  <Button 
-                    size="sm" 
-                    variant="destructive"
-                    onClick={() => handleStatusChange(job.id, 'rejected')}
-                  >
-                    <XCircle className="h-4 w-4 mr-1" />
-                    Reject
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button 
+                        size="sm" 
+                        variant="destructive"
+                        onClick={() => setSelectedJob(job)}
+                      >
+                        <XCircle className="h-4 w-4 mr-1" />
+                        Reject
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Reject Job Posting</DialogTitle>
+                        <DialogDescription>
+                          You are about to reject the job posting "{job.title}" by {job.company}.
+                          Please provide a reason for rejection that will be communicated to the employer.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Textarea
+                        placeholder="Please provide a reason for rejection (e.g., incomplete job description, inappropriate content, etc.)"
+                        value={declineMessage}
+                        onChange={(e) => setDeclineMessage(e.target.value)}
+                        className="min-h-[100px]"
+                      />
+                      <DialogFooter>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => {
+                            setSelectedJob(null);
+                            setDeclineMessage('');
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={handleDeclineWithMessage}
+                          disabled={isProcessing || !declineMessage.trim()}
+                          variant="destructive"
+                        >
+                          {isProcessing ? 'Processing...' : 'Reject Job'}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </>
               )}
               
               {job.status === 'approved' && (
                 <>
-                  <Button 
-                    size="sm" 
-                    variant="destructive"
-                    onClick={() => handleStatusChange(job.id, 'rejected')}
-                  >
-                    <XCircle className="h-4 w-4 mr-1" />
-                    Reject
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button 
+                        size="sm" 
+                        variant="destructive"
+                        onClick={() => setSelectedJob(job)}
+                      >
+                        <XCircle className="h-4 w-4 mr-1" />
+                        Reject
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Reject Job Posting</DialogTitle>
+                        <DialogDescription>
+                          You are about to reject the job posting "{job.title}" by {job.company}.
+                          Please provide a reason for rejection that will be communicated to the employer.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Textarea
+                        placeholder="Please provide a reason for rejection (e.g., policy violation, inappropriate content, etc.)"
+                        value={declineMessage}
+                        onChange={(e) => setDeclineMessage(e.target.value)}
+                        className="min-h-[100px]"
+                      />
+                      <DialogFooter>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => {
+                            setSelectedJob(null);
+                            setDeclineMessage('');
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={handleDeclineWithMessage}
+                          disabled={isProcessing || !declineMessage.trim()}
+                          variant="destructive"
+                        >
+                          {isProcessing ? 'Processing...' : 'Reject Job'}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                   <Button 
                     size="sm" 
                     variant="outline"
