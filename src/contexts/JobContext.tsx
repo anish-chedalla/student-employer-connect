@@ -26,21 +26,34 @@ export interface JobApplication {
   resume_url?: string;
   applied_at: string;
   employer_message?: string;
+  interview_status?: string;
   // Joined job details
   job_title?: string;
   company_name?: string;
   job_location?: string;
 }
 
+export interface Interview {
+  id: string;
+  application_id: string;
+  employer_message: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
 interface JobContextType {
   jobs: JobPosting[];
   applications: JobApplication[];
+  interviews: Interview[];
   submitJob: (job: Omit<JobPosting, 'id' | 'status' | 'employer_id' | 'created_at' | 'updated_at'>) => Promise<boolean>;
   updateJobStatus: (jobId: string, status: 'approved' | 'rejected' | 'pending') => Promise<boolean>;
   applyToJob: (jobId: string, coverLetter: string) => Promise<boolean>;
+  createInterview: (applicationId: string, message: string) => Promise<boolean>;
   getJobsByEmployer: (employerId: string) => JobPosting[];
   getApprovedJobs: () => JobPosting[];
   getStudentApplications: () => JobApplication[];
+  getStudentInterviews: () => Interview[];
   refreshJobs: () => Promise<void>;
   isLoading: boolean;
 }
@@ -51,6 +64,7 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const { user, profile } = useAuth();
   const [jobs, setJobs] = useState<JobPosting[]>([]);
   const [applications, setApplications] = useState<JobApplication[]>([]);
+  const [interviews, setInterviews] = useState<Interview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshJobs = async () => {
@@ -127,11 +141,37 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
+  const refreshInterviews = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('interviews')
+        .select(`
+          *,
+          applications!interviews_application_id_fkey (
+            student_id
+          )
+        `)
+        .eq('applications.student_id', user.id);
+
+      if (error) {
+        console.error('Error fetching interviews:', error);
+        return;
+      }
+
+      setInterviews(data || []);
+    } catch (error) {
+      console.error('Error refreshing interviews:', error);
+    }
+  };
+
   useEffect(() => {
     if (profile) {
       refreshJobs();
       if (profile.role === 'student') {
         refreshApplications();
+        refreshInterviews();
       }
     }
   }, [profile, user]);
@@ -223,6 +263,42 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
+  const createInterview = async (applicationId: string, message: string): Promise<boolean> => {
+    try {
+      const { error } = await supabase.from('interviews').insert([
+        {
+          application_id: applicationId,
+          employer_message: message,
+          status: 'scheduled'
+        }
+      ]);
+
+      if (error) {
+        console.error('Error creating interview:', error);
+        return false;
+      }
+
+      // Update application interview status
+      const { error: updateError } = await supabase
+        .from('applications')
+        .update({ interview_status: 'scheduled' })
+        .eq('id', applicationId);
+
+      if (updateError) {
+        console.error('Error updating application interview status:', updateError);
+        return false;
+      }
+
+      if (profile?.role === 'student') {
+        await refreshInterviews();
+      }
+      return true;
+    } catch (error) {
+      console.error('Error creating interview:', error);
+      return false;
+    }
+  };
+
   const getJobsByEmployer = (employerId: string) => {
     return jobs.filter(job => job.employer_id === employerId);
   };
@@ -235,15 +311,22 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return applications;
   };
 
+  const getStudentInterviews = () => {
+    return interviews;
+  };
+
   const value = {
     jobs,
     applications,
+    interviews,
     submitJob,
     updateJobStatus,
     applyToJob,
+    createInterview,
     getJobsByEmployer,
     getApprovedJobs,
     getStudentApplications,
+    getStudentInterviews,
     refreshJobs,
     isLoading,
   };

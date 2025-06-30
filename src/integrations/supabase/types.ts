@@ -18,6 +18,7 @@ export type Database = {
           cover_letter: string | null
           employer_message: string | null
           id: string
+          interview_status: string | null
           job_id: string
           resume_url: string | null
           status: string
@@ -31,6 +32,7 @@ export type Database = {
           cover_letter?: string | null
           employer_message?: string | null
           id?: string
+          interview_status?: string | null
           job_id: string
           resume_url?: string | null
           status?: string
@@ -44,6 +46,7 @@ export type Database = {
           cover_letter?: string | null
           employer_message?: string | null
           id?: string
+          interview_status?: string | null
           job_id?: string
           resume_url?: string | null
           status?: string
@@ -97,6 +100,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "email_logs_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interviews: {
+        Row: {
+          application_id: string
+          created_at: string
+          employer_message: string
+          id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          employer_message: string
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          employer_message?: string
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interviews_application_id_fkey"
             columns: ["application_id"]
             isOneToOne: false
             referencedRelation: "applications"

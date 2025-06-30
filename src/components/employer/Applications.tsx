@@ -6,10 +6,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ResumePreview } from './ResumePreview';
+import { InterviewDialog } from './InterviewDialog';
 import { useAuth } from '../../contexts/AuthContext';
 import { useJobs } from '../../contexts/JobContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, FileText, Mail, Check, X, ChevronDown, ChevronRight, ArrowLeft } from 'lucide-react';
+import { Users, FileText, Mail, Check, X, ChevronDown, ChevronRight, ArrowLeft, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Application {
@@ -23,6 +24,7 @@ interface Application {
   applicant_name?: string;
   applicant_email?: string;
   additional_comments?: string;
+  interview_status?: string;
   job: {
     title: string;
     company: string;
@@ -47,6 +49,17 @@ export const Applications = ({ selectedJobId, selectedJobTitle, onBackToAllAppli
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [message, setMessage] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [interviewDialog, setInterviewDialog] = useState<{
+    isOpen: boolean;
+    applicationId: string;
+    applicantName: string;
+    jobTitle: string;
+  }>({
+    isOpen: false,
+    applicationId: '',
+    applicantName: '',
+    jobTitle: ''
+  });
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     pending: true,
     accepted: false,
@@ -78,7 +91,8 @@ export const Applications = ({ selectedJobId, selectedJobTitle, onBackToAllAppli
             applied_at,
             applicant_name,
             applicant_email,
-            additional_comments
+            additional_comments,
+            interview_status
           `)
           .in('job_id', jobIds);
 
@@ -195,6 +209,119 @@ export const Applications = ({ selectedJobId, selectedJobTitle, onBackToAllAppli
     }
   };
 
+  const handleInterviewCreated = () => {
+    // Refresh applications to show updated interview status
+    const fetchApplications = () => {
+      if (jobIds.length === 0) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        // Get applications for employer's jobs (or specific job if selectedJobId)
+        const { data: applicationsData, error: applicationsError } = supabase
+          .from('applications')
+          .select(`
+            id,
+            job_id,
+            student_id,
+            status,
+            cover_letter,
+            resume_url,
+            applied_at,
+            applicant_name,
+            applicant_email,
+            additional_comments,
+            interview_status
+          `)
+          .in('job_id', jobIds)
+          .then(response => {
+            if (response.error) {
+              console.error('Error fetching applications:', response.error);
+              return;
+            }
+
+            if (!response.data || response.data.length === 0) {
+              setApplications([]);
+              setIsLoading(false);
+              return;
+            }
+
+            // Get unique student IDs
+            const studentIds = [...new Set(response.data.map(app => app.student_id))];
+
+            // Get student profiles
+            supabase
+              .from('profiles')
+              .select('id, full_name, email')
+              .in('id', studentIds)
+              .then(profilesResponse => {
+                if (profilesResponse.error) {
+                  console.error('Error fetching profiles:', profilesResponse.error);
+                  return;
+                }
+
+                // Get job details
+                supabase
+                  .from('jobs')
+                  .select('id, title, company')
+                  .in('id', jobIds)
+                  .then(jobsResponse => {
+                    if (jobsResponse.error) {
+                      console.error('Error fetching jobs:', jobsResponse.error);
+                      return;
+                    }
+
+                    // Combine the data
+                    const transformedData: Application[] = response.data!.map(app => {
+                      const profile = profilesResponse.data?.find(p => p.id === app.student_id);
+                      const job = jobsResponse.data?.find(j => j.id === app.job_id);
+
+                      return {
+                        ...app,
+                        status: app.status as 'pending' | 'reviewed' | 'accepted' | 'rejected',
+                        job: {
+                          title: job?.title || 'Unknown Job',
+                          company: job?.company || 'Unknown Company'
+                        },
+                        student: {
+                          full_name: profile?.full_name || 'Unknown Student',
+                          email: profile?.email || 'Unknown Email'
+                        }
+                      };
+                    });
+
+                    setApplications(transformedData);
+                  });
+              });
+          });
+      } catch (error) {
+        console.error('Error fetching applications:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchApplications();
+  };
+
+  const openInterviewDialog = (application: Application) => {
+    setInterviewDialog({
+      isOpen: true,
+      applicationId: application.id,
+      applicantName: application.applicant_name || application.student.full_name,
+      jobTitle: application.job.title
+    });
+  };
+
+  const closeInterviewDialog = () => {
+    setInterviewDialog({
+      isOpen: false,
+      applicationId: '',
+      applicantName: '',
+      jobTitle: ''
+    });
+  };
+
   const downloadResume = async (resumeUrl: string, applicantName: string) => {
     if (!resumeUrl) {
       toast({
@@ -286,10 +413,15 @@ export const Applications = ({ selectedJobId, selectedJobTitle, onBackToAllAppli
               <Mail className="h-4 w-4 mr-1" />
               <span>{application.applicant_email || application.student.email}</span>
             </div>
+            {application.interview_status && application.interview_status !== 'none' && (
+              <div className="flex items-center text-blue-600 mb-2">
+                <Calendar className="h-4 w-4 mr-1" />
+                <span className="text-sm font-medium">Interview: {application.interview_status}</span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Enhanced Application Details */}
         <div className="space-y-4">
           {application.cover_letter && (
             <div>
@@ -419,6 +551,16 @@ export const Applications = ({ selectedJobId, selectedJobTitle, onBackToAllAppli
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                onClick={() => openInterviewDialog(application)}
+              >
+                <Calendar className="h-4 w-4 mr-1" />
+                Create Interview
+              </Button>
             </div>
           )}
         </div>
@@ -483,92 +625,100 @@ export const Applications = ({ selectedJobId, selectedJobTitle, onBackToAllAppli
   }
 
   return (
-    <div className="space-y-6">
-      {selectedJobId && (
-        <div className="flex items-center space-x-3">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onBackToAllApplications}
-            className="flex items-center space-x-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back to All Applications</span>
-          </Button>
-        </div>
-      )}
+    <>
+      <div className="space-y-6">
+        {selectedJobId && (
+          <div className="flex items-center space-x-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onBackToAllApplications}
+              className="flex items-center space-x-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back to All Applications</span>
+            </Button>
+          </div>
+        )}
 
-      <div className="flex items-center space-x-3">
-        <Users className="h-8 w-8 text-green-600" />
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {selectedJobTitle ? `Applications for ${selectedJobTitle}` : 'Applications'}
-          </h1>
-          <p className="text-gray-600">
-            {selectedJobTitle ? `Showing ${applications.length} applications for this job` : 'Review and manage job applications'}
-          </p>
+        <div className="flex items-center space-x-3">
+          <Users className="h-8 w-8 text-green-600" />
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {selectedJobTitle ? `Applications for ${selectedJobTitle}` : 'Applications'}
+            </h1>
+            <p className="text-gray-600">
+              {selectedJobTitle ? `Showing ${applications.length} applications for this job` : 'Review and manage job applications'}
+            </p>
+          </div>
         </div>
+
+        <Collapsible open={openSections.pending} onOpenChange={() => toggleSection('pending')}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors">
+            <div className="flex items-center space-x-3">
+              <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                Pending ({getApplicationsByStatus('pending').length})
+              </Badge>
+              <h2 className="text-xl font-semibold text-gray-900">Pending Applications</h2>
+            </div>
+            {openSections.pending ? (
+              <ChevronDown className="h-5 w-5 text-gray-600" />
+            ) : (
+              <ChevronRight className="h-5 w-5 text-gray-600" />
+            )}
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-4 mt-4">
+            {getApplicationsByStatus('pending').map(renderApplicationCard)}
+          </CollapsibleContent>
+        </Collapsible>
+
+        <Collapsible open={openSections.accepted} onOpenChange={() => toggleSection('accepted')}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+            <div className="flex items-center space-x-3">
+              <Badge className="bg-green-100 text-green-800 border-green-200">
+                Accepted ({getApplicationsByStatus('accepted').length})
+              </Badge>
+              <h2 className="text-xl font-semibold text-gray-900">Accepted Applications</h2>
+            </div>
+            {openSections.accepted ? (
+              <ChevronDown className="h-5 w-5 text-gray-600" />
+            ) : (
+              <ChevronRight className="h-5 w-5 text-gray-600" />
+            )}
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-4 mt-4">
+            {getApplicationsByStatus('accepted').map(renderApplicationCard)}
+          </CollapsibleContent>
+        </Collapsible>
+
+        <Collapsible open={openSections.rejected} onOpenChange={() => toggleSection('rejected')}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+            <div className="flex items-center space-x-3">
+              <Badge className="bg-red-100 text-red-800 border-red-200">
+                Rejected ({getApplicationsByStatus('rejected').length})
+              </Badge>
+              <h2 className="text-xl font-semibold text-gray-900">Rejected Applications</h2>
+            </div>
+            {openSections.rejected ? (
+              <ChevronDown className="h-5 w-5 text-gray-600" />
+            ) : (
+              <ChevronRight className="h-5 w-5 text-gray-600" />
+            )}
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-4 mt-4">
+            {getApplicationsByStatus('rejected').map(renderApplicationCard)}
+          </CollapsibleContent>
+        </Collapsible>
       </div>
 
-      {/* Pending Applications */}
-      <Collapsible open={openSections.pending} onOpenChange={() => toggleSection('pending')}>
-        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors">
-          <div className="flex items-center space-x-3">
-            <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
-              Pending ({getApplicationsByStatus('pending').length})
-            </Badge>
-            <h2 className="text-xl font-semibold text-gray-900">Pending Applications</h2>
-          </div>
-          {openSections.pending ? (
-            <ChevronDown className="h-5 w-5 text-gray-600" />
-          ) : (
-            <ChevronRight className="h-5 w-5 text-gray-600" />
-          )}
-        </CollapsibleTrigger>
-        <CollapsibleContent className="space-y-4 mt-4">
-          {getApplicationsByStatus('pending').map(renderApplicationCard)}
-        </CollapsibleContent>
-      </Collapsible>
-
-      {/* Accepted Applications */}
-      <Collapsible open={openSections.accepted} onOpenChange={() => toggleSection('accepted')}>
-        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
-          <div className="flex items-center space-x-3">
-            <Badge className="bg-green-100 text-green-800 border-green-200">
-              Accepted ({getApplicationsByStatus('accepted').length})
-            </Badge>
-            <h2 className="text-xl font-semibold text-gray-900">Accepted Applications</h2>
-          </div>
-          {openSections.accepted ? (
-            <ChevronDown className="h-5 w-5 text-gray-600" />
-          ) : (
-            <ChevronRight className="h-5 w-5 text-gray-600" />
-          )}
-        </CollapsibleTrigger>
-        <CollapsibleContent className="space-y-4 mt-4">
-          {getApplicationsByStatus('accepted').map(renderApplicationCard)}
-        </CollapsibleContent>
-      </Collapsible>
-
-      {/* Rejected Applications */}
-      <Collapsible open={openSections.rejected} onOpenChange={() => toggleSection('rejected')}>
-        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
-          <div className="flex items-center space-x-3">
-            <Badge className="bg-red-100 text-red-800 border-red-200">
-              Rejected ({getApplicationsByStatus('rejected').length})
-            </Badge>
-            <h2 className="text-xl font-semibold text-gray-900">Rejected Applications</h2>
-          </div>
-          {openSections.rejected ? (
-            <ChevronDown className="h-5 w-5 text-gray-600" />
-          ) : (
-            <ChevronRight className="h-5 w-5 text-gray-600" />
-          )}
-        </CollapsibleTrigger>
-        <CollapsibleContent className="space-y-4 mt-4">
-          {getApplicationsByStatus('rejected').map(renderApplicationCard)}
-        </CollapsibleContent>
-      </Collapsible>
-    </div>
+      <InterviewDialog
+        isOpen={interviewDialog.isOpen}
+        onClose={closeInterviewDialog}
+        applicationId={interviewDialog.applicationId}
+        applicantName={interviewDialog.applicantName}
+        jobTitle={interviewDialog.jobTitle}
+        onInterviewCreated={handleInterviewCreated}
+      />
+    </>
   );
 };
